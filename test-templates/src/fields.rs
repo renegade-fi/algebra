@@ -368,6 +368,10 @@ macro_rules! __test_field {
                 for i in 0..<$field>::TWO_ADICITY {
                     for j in 0..small_subgroup_base_adicity {
                         use core::convert::TryFrom;
+                        println!("{}", i);
+                        println!("1 << i = {}", usize::try_from(1 << i as usize).unwrap());
+                        println!("{}", j);
+                        println!("q << j = {}", usize::try_from((small_subgroup_base as u64).pow(j)).unwrap());
                         let size = usize::try_from(1 << i as usize).unwrap()
                         * usize::try_from((small_subgroup_base as u64).pow(j)).unwrap();
                         let root = <$field>::get_root_of_unity(size as u64).unwrap();
