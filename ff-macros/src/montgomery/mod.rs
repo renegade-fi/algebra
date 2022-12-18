@@ -44,6 +44,16 @@ pub fn mont_config_helper(
         trace >>= 1u8;
     }
 
+    // Compute 2^s root of unity given the generator
+    let remaining_subgroup_size = match (small_subgroup_base, small_subgroup_power) {
+        (Some(base), Some(power)) => Some(&trace / BigUint::from(base).pow(power)),
+        (None, None) => None,
+        (..) => panic!("Must specify both `small_subgroup_base` and `small_subgroup_power`"),
+    };
+    let two_adic_root_of_unity = generator.modpow(&trace, &modulus);
+    let large_subgroup_generator = remaining_subgroup_size
+        .as_ref()
+        .map(|e| generator.modpow(e, &modulus).to_string());
     let modulus = modulus.to_string();
     let generator = generator.to_string();
     let two_adic_root_of_unity = two_adic_root_of_unity.to_string();
