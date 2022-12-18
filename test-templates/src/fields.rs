@@ -364,9 +364,10 @@ macro_rules! __test_field {
                 let large_subgroup_root_of_unity = <$field>::LARGE_SUBGROUP_ROOT_OF_UNITY.unwrap();
                 let pow =
                 (1 << <$field>::TWO_ADICITY) * (small_subgroup_base as u64).pow(small_subgroup_base_adicity);
-                println!("b");
+                let rou_biguint: BigUint = large_subgroup_root_of_unity.into();
+                println!("b, pow = {}, rou = {}", pow, rou_biguint);
                 assert_eq!(large_subgroup_root_of_unity.pow([pow]), <$field>::one());
-
+te
                 for i in 0..=<$field>::TWO_ADICITY {
                     for j in 0..=small_subgroup_base_adicity {
                         let size = (1u64 << i) * (small_subgroup_base as u64).pow(j);
