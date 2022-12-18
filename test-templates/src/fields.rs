@@ -353,6 +353,7 @@ macro_rules! __test_field {
         #[test]
         fn test_fft() {
             use ark_ff::FftField;
+            println!("a");
             assert_eq!(
                 <$field>::TWO_ADIC_ROOT_OF_UNITY.pow([1 << <$field>::TWO_ADICITY]),
                 <$field>::one()
@@ -363,12 +364,14 @@ macro_rules! __test_field {
                 let large_subgroup_root_of_unity = <$field>::LARGE_SUBGROUP_ROOT_OF_UNITY.unwrap();
                 let pow =
                 (1 << <$field>::TWO_ADICITY) * (small_subgroup_base as u64).pow(small_subgroup_base_adicity);
+                println!("b");
                 assert_eq!(large_subgroup_root_of_unity.pow([pow]), <$field>::one());
 
                 for i in 0..=<$field>::TWO_ADICITY {
                     for j in 0..=small_subgroup_base_adicity {
                         let size = (1u64 << i) * (small_subgroup_base as u64).pow(j);
                         let root = <$field>::get_root_of_unity(size as u64).unwrap();
+                        println!("c");
                         assert_eq!(root.pow([size as u64]), <$field>::one());
                     }
                 }
@@ -377,6 +380,7 @@ macro_rules! __test_field {
                     let size = 1 << i;
                     let root = <$field>::get_root_of_unity(size).unwrap();
                     assert_eq!(root.pow([size as u64]), <$field>::one());
+                    println!("c'");
                 }
             }
         }
