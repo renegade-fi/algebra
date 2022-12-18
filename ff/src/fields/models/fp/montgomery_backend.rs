@@ -199,12 +199,13 @@ pub trait MontConfig<const N: usize>: 'static + Sync + Send + Sized {
                 }
                 (a.0).0 = r;
             }
+            a.subtract_modulus();
         } else {
             // Alternative implementation
             // Implements CIOS.
-            *a = a.mul_without_cond_subtract(b);
+            let carry = a.mul_without_cond_subtract(b);
+            a.subtract_modulus_with_carry(carry);
         }
-        a.subtract_modulus();
     }
 
     #[inline(always)]
@@ -734,7 +735,7 @@ impl<T: MontConfig<N>, const N: usize> Fp<MontBackend<T, N>, N> {
         }
     }
 
-    const fn mul_without_cond_subtract(mut self, other: &Self) -> Self {
+    const fn mul_without_cond_subtract(mut self, other: &Self) -> bool {
         let (mut lo, mut hi) = ([0u64; N], [0u64; N]);
         crate::const_for!((i in 0..N) {
             let mut carry = 0;
@@ -768,12 +769,12 @@ impl<T: MontConfig<N>, const N: usize> Fp<MontBackend<T, N>, N> {
         crate::const_for!((i in 0..N) {
             (self.0).0[i] = hi[i];
         });
-        self
+        carry2 != 0
     }
 
     const fn mul(mut self, other: &Self) -> Self {
-        self = self.mul_without_cond_subtract(other);
-        self.const_subtract_modulus()
+        let carry = self.mul_without_cond_subtract(other);
+        self.const_subtract_modulus_with_carry(carry)
     }
 
     const fn const_is_valid(&self) -> bool {
@@ -788,8 +789,8 @@ impl<T: MontConfig<N>, const N: usize> Fp<MontBackend<T, N>, N> {
     }
 
     #[inline]
-    const fn const_subtract_modulus(mut self) -> Self {
-        if !self.const_is_valid() {
+    const fn const_subtract_modulus_with_carry(mut self, carry: bool) -> Self {
+        if carry || !self.const_is_valid() {
             self.0 = Self::sub_with_borrow(&self.0, &T::MODULUS);
         }
         self
