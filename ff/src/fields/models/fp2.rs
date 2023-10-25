@@ -20,7 +20,7 @@ pub trait Fp2Config: 'static + Send + Sync + Sized {
     /// Return `fe * Self::NONRESIDUE`.
     /// Intended for specialization when [`Self::NONRESIDUE`] has a special
     /// structure that can speed up multiplication
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_fp_by_nonresidue_in_place(fe: &mut Self::Fp) -> &mut Self::Fp {
         *fe *= Self::NONRESIDUE;
         fe
@@ -29,7 +29,7 @@ pub trait Fp2Config: 'static + Send + Sync + Sized {
     /// A specializable method for setting `y = x + NONRESIDUE * y`.
     /// This allows for optimizations when the non-residue is
     /// canonically negative in the field.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_fp_by_nonresidue_and_add(y: &mut Self::Fp, x: &Self::Fp) {
         Self::mul_fp_by_nonresidue_in_place(y);
         *y += x;
@@ -37,7 +37,7 @@ pub trait Fp2Config: 'static + Send + Sync + Sized {
 
     /// A specializable method for computing x + mul_fp_by_nonresidue(y) + y
     /// This allows for optimizations when the non-residue is not -1.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_fp_by_nonresidue_plus_one_and_add(y: &mut Self::Fp, x: &Self::Fp) {
         let old_y = *y;
         Self::mul_fp_by_nonresidue_and_add(y, x);
@@ -47,7 +47,7 @@ pub trait Fp2Config: 'static + Send + Sync + Sized {
     /// A specializable method for computing x - mul_fp_by_nonresidue(y)
     /// This allows for optimizations when the non-residue is
     /// canonically negative in the field.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn sub_and_mul_fp_by_nonresidue(y: &mut Self::Fp, x: &Self::Fp) {
         *y = *x - Self::mul_fp_by_nonresidue_in_place(y);
     }
@@ -67,22 +67,22 @@ impl<P: Fp2Config> QuadExtConfig for Fp2ConfigWrapper<P> {
 
     const FROBENIUS_COEFF_C1: &'static [Self::FrobCoeff] = P::FROBENIUS_COEFF_FP2_C1;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_in_place(fe: &mut Self::BaseField) -> &mut Self::BaseField {
         P::mul_fp_by_nonresidue_in_place(fe)
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_and_add(y: &mut Self::BaseField, x: &Self::BaseField) {
         P::mul_fp_by_nonresidue_and_add(y, x)
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_plus_one_and_add(y: &mut Self::BaseField, x: &Self::BaseField) {
         P::mul_fp_by_nonresidue_plus_one_and_add(y, x)
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn sub_and_mul_base_field_by_nonresidue(y: &mut Self::BaseField, x: &Self::BaseField) {
         P::sub_and_mul_fp_by_nonresidue(y, x)
     }

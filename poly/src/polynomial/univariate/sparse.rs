@@ -179,7 +179,7 @@ impl<'a, F: Field> AddAssign<(F, &'a SparsePolynomial<F>)> for SparsePolynomial<
 impl<F: Field> Neg for SparsePolynomial<F> {
     type Output = SparsePolynomial<F>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn neg(mut self) -> SparsePolynomial<F> {
         for (_, coeff) in &mut self.coeffs {
             *coeff = -*coeff;
@@ -190,7 +190,7 @@ impl<F: Field> Neg for SparsePolynomial<F> {
 
 impl<'a, F: Field> SubAssign<&'a SparsePolynomial<F>> for SparsePolynomial<F> {
     // TODO: Reduce number of clones
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub_assign(&mut self, other: &'a SparsePolynomial<F>) {
         let self_copy = -self.clone();
         self.coeffs = (self_copy + other.clone()).coeffs;
@@ -200,7 +200,7 @@ impl<'a, F: Field> SubAssign<&'a SparsePolynomial<F>> for SparsePolynomial<F> {
 impl<'b, F: Field> Mul<F> for &'b SparsePolynomial<F> {
     type Output = SparsePolynomial<F>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(self, elem: F) -> SparsePolynomial<F> {
         if self.is_zero() || elem.is_zero() {
             SparsePolynomial::zero()

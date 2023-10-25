@@ -51,7 +51,7 @@ pub trait QuadExtConfig: 'static + Send + Sync + Sized {
     /// A specializable method for multiplying an element of the base field by
     /// the quadratic non-residue. This is used in Karatsuba multiplication
     /// and in complex squaring.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_in_place(fe: &mut Self::BaseField) -> &mut Self::BaseField {
         *fe *= &Self::NONRESIDUE;
         fe
@@ -60,7 +60,7 @@ pub trait QuadExtConfig: 'static + Send + Sync + Sized {
     /// A specializable method for setting `y = x + NONRESIDUE * y`.
     /// This allows for optimizations when the non-residue is
     /// canonically negative in the field.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_and_add(y: &mut Self::BaseField, x: &Self::BaseField) {
         Self::mul_base_field_by_nonresidue_in_place(y);
         *y += x;
@@ -68,7 +68,7 @@ pub trait QuadExtConfig: 'static + Send + Sync + Sized {
 
     /// A specializable method for computing x + mul_base_field_by_nonresidue(y) + y
     /// This allows for optimizations when the non-residue is not -1.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_plus_one_and_add(y: &mut Self::BaseField, x: &Self::BaseField) {
         let old_y = *y;
         Self::mul_base_field_by_nonresidue_and_add(y, x);
@@ -78,7 +78,7 @@ pub trait QuadExtConfig: 'static + Send + Sync + Sized {
     /// A specializable method for computing x - mul_base_field_by_nonresidue(y)
     /// This allows for optimizations when the non-residue is
     /// canonically negative in the field.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn sub_and_mul_base_field_by_nonresidue(y: &mut Self::BaseField, x: &Self::BaseField) {
         Self::mul_base_field_by_nonresidue_in_place(y);
         let mut result = *x;
@@ -254,7 +254,7 @@ impl<P: QuadExtConfig> Field for QuadExtField<P> {
         result
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_random_bytes_with_flags<F: Flags>(bytes: &[u8]) -> Option<(Self, F)> {
         let split_at = bytes.len() / 2;
         if let Some(c0) = P::BaseField::from_random_bytes(&bytes[..split_at]) {
@@ -267,7 +267,7 @@ impl<P: QuadExtConfig> Field for QuadExtField<P> {
         None
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_random_bytes(bytes: &[u8]) -> Option<Self> {
         Self::from_random_bytes_with_flags::<EmptyFlags>(bytes).map(|f| f.0)
     }
@@ -444,7 +444,7 @@ impl<P: QuadExtConfig> Field for QuadExtField<P> {
 
 /// `QuadExtField` elements are ordered lexicographically.
 impl<P: QuadExtConfig> Ord for QuadExtField<P> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn cmp(&self, other: &Self) -> Ordering {
         match self.c1.cmp(&other.c1) {
             Ordering::Greater => Ordering::Greater,
@@ -455,7 +455,7 @@ impl<P: QuadExtConfig> Ord for QuadExtField<P> {
 }
 
 impl<P: QuadExtConfig> PartialOrd for QuadExtField<P> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
@@ -477,7 +477,7 @@ impl<P: QuadExtConfig> From<u128> for QuadExtField<P> {
 }
 
 impl<P: QuadExtConfig> From<i128> for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i128) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -495,7 +495,7 @@ impl<P: QuadExtConfig> From<u64> for QuadExtField<P> {
 }
 
 impl<P: QuadExtConfig> From<i64> for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i64) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -513,7 +513,7 @@ impl<P: QuadExtConfig> From<u32> for QuadExtField<P> {
 }
 
 impl<P: QuadExtConfig> From<i32> for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i32) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -531,7 +531,7 @@ impl<P: QuadExtConfig> From<u16> for QuadExtField<P> {
 }
 
 impl<P: QuadExtConfig> From<i16> for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i16) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -549,7 +549,7 @@ impl<P: QuadExtConfig> From<u8> for QuadExtField<P> {
 }
 
 impl<P: QuadExtConfig> From<i8> for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i8) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -568,7 +568,7 @@ impl<P: QuadExtConfig> From<bool> for QuadExtField<P> {
 
 impl<P: QuadExtConfig> Neg for QuadExtField<P> {
     type Output = Self;
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     #[must_use]
     fn neg(mut self) -> Self {
         self.c0.neg_in_place();
@@ -578,7 +578,7 @@ impl<P: QuadExtConfig> Neg for QuadExtField<P> {
 }
 
 impl<P: QuadExtConfig> Distribution<QuadExtField<P>> for Standard {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> QuadExtField<P> {
         QuadExtField::new(UniformRand::rand(rng), UniformRand::rand(rng))
     }
@@ -587,7 +587,7 @@ impl<P: QuadExtConfig> Distribution<QuadExtField<P>> for Standard {
 impl<'a, P: QuadExtConfig> Add<&'a QuadExtField<P>> for QuadExtField<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(mut self, other: &Self) -> Self {
         self += other;
         self
@@ -597,7 +597,7 @@ impl<'a, P: QuadExtConfig> Add<&'a QuadExtField<P>> for QuadExtField<P> {
 impl<'a, P: QuadExtConfig> Sub<&'a QuadExtField<P>> for QuadExtField<P> {
     type Output = Self;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn sub(mut self, other: &Self) -> Self {
         self -= other;
         self
@@ -607,7 +607,7 @@ impl<'a, P: QuadExtConfig> Sub<&'a QuadExtField<P>> for QuadExtField<P> {
 impl<'a, P: QuadExtConfig> Mul<&'a QuadExtField<P>> for QuadExtField<P> {
     type Output = Self;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul(mut self, other: &Self) -> Self {
         self *= other;
         self
@@ -617,7 +617,7 @@ impl<'a, P: QuadExtConfig> Mul<&'a QuadExtField<P>> for QuadExtField<P> {
 impl<'a, P: QuadExtConfig> Div<&'a QuadExtField<P>> for QuadExtField<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div(mut self, other: &Self) -> Self {
         self.mul_assign(&other.inverse().unwrap());
         self
@@ -625,7 +625,7 @@ impl<'a, P: QuadExtConfig> Div<&'a QuadExtField<P>> for QuadExtField<P> {
 }
 
 impl<'a, P: QuadExtConfig> AddAssign<&'a Self> for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add_assign(&mut self, other: &Self) {
         self.c0 += &other.c0;
         self.c1 += &other.c1;
@@ -633,7 +633,7 @@ impl<'a, P: QuadExtConfig> AddAssign<&'a Self> for QuadExtField<P> {
 }
 
 impl<'a, P: QuadExtConfig> SubAssign<&'a Self> for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub_assign(&mut self, other: &Self) {
         self.c0 -= &other.c0;
         self.c1 -= &other.c1;
@@ -644,7 +644,7 @@ impl_additive_ops_from_ref!(QuadExtField, QuadExtConfig);
 impl_multiplicative_ops_from_ref!(QuadExtField, QuadExtConfig);
 
 impl<'a, P: QuadExtConfig> MulAssign<&'a Self> for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul_assign(&mut self, other: &Self) {
         if Self::extension_degree() == 2 {
             let c1_input = [self.c0, self.c1];
@@ -672,7 +672,7 @@ impl<'a, P: QuadExtConfig> MulAssign<&'a Self> for QuadExtField<P> {
 }
 
 impl<'a, P: QuadExtConfig> DivAssign<&'a Self> for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div_assign(&mut self, other: &Self) {
         self.mul_assign(&other.inverse().unwrap());
     }
@@ -685,7 +685,7 @@ impl<P: QuadExtConfig> fmt::Display for QuadExtField<P> {
 }
 
 impl<P: QuadExtConfig> CanonicalSerializeWithFlags for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_flags<W: Write, F: Flags>(
         &self,
         mut writer: W,
@@ -696,14 +696,14 @@ impl<P: QuadExtConfig> CanonicalSerializeWithFlags for QuadExtField<P> {
         Ok(())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size_with_flags<F: Flags>(&self) -> usize {
         self.c0.compressed_size() + self.c1.serialized_size_with_flags::<F>()
     }
 }
 
 impl<P: QuadExtConfig> CanonicalSerialize for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         writer: W,
@@ -712,14 +712,14 @@ impl<P: QuadExtConfig> CanonicalSerialize for QuadExtField<P> {
         self.serialize_with_flags(writer, EmptyFlags)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, _compress: Compress) -> usize {
         self.serialized_size_with_flags::<EmptyFlags>()
     }
 }
 
 impl<P: QuadExtConfig> CanonicalDeserializeWithFlags for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_flags<R: Read, F: Flags>(
         mut reader: R,
     ) -> Result<(Self, F), SerializationError> {
@@ -737,7 +737,7 @@ impl<P: QuadExtConfig> Valid for QuadExtField<P> {
 }
 
 impl<P: QuadExtConfig> CanonicalDeserialize for QuadExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         mut reader: R,
         compress: Compress,

@@ -26,21 +26,21 @@ impl<F: PrimeField> ToConstraintField<F> for F {
 
 // Impl for base field
 impl<F: Field> ToConstraintField<F> for [F] {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_field_elements(&self) -> Option<Vec<F>> {
         Some(self.to_vec())
     }
 }
 
 impl<ConstraintF: Field> ToConstraintField<ConstraintF> for () {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
         Some(Vec::new())
     }
 }
 
 impl<ConstraintF: PrimeField> ToConstraintField<ConstraintF> for [u8] {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
         let max_size = ((ConstraintF::MODULUS_BIT_SIZE - 1) / 8) as usize;
         let bigint_size = <ConstraintF as PrimeField>::BigInt::NUM_LIMBS * 8;
@@ -57,14 +57,14 @@ impl<ConstraintF: PrimeField> ToConstraintField<ConstraintF> for [u8] {
 }
 
 impl<ConstraintF: PrimeField> ToConstraintField<ConstraintF> for [u8; 32] {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
         self.as_ref().to_field_elements()
     }
 }
 
 impl<ConstraintF: PrimeField> ToConstraintField<ConstraintF> for Vec<u8> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
         self.as_slice().to_field_elements()
     }

@@ -53,7 +53,7 @@ impl short_weierstrass::SWCurveConfig for Config {
     /// AFFINE_GENERATOR_COEFFS = (G2_GENERATOR_X, G2_GENERATOR_Y)
     const GENERATOR: G2Affine = G2Affine::new_unchecked(G2_GENERATOR_X, G2_GENERATOR_Y);
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_by_a(_: Self::BaseField) -> Self::BaseField {
         Self::BaseField::zero()
     }
@@ -74,7 +74,7 @@ impl short_weierstrass::SWCurveConfig for Config {
         x_times_point.eq(&p_times_point)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn clear_cofactor(p: &G2Affine) -> G2Affine {
         // Based on Section 4.1 of https://eprint.iacr.org/2017/419.pdf
         // [h(ψ)]P = [x^2 − x − 1]P + [x − 1]ψ(P) + (ψ^2)(2P)

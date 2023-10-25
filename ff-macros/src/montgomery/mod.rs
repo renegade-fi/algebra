@@ -117,12 +117,12 @@ pub fn mont_config_helper(
 
                 #mixed_radix
 
-                #[inline(always)]
+                #[cfg_attr(not(feature = "bin-opt"), inline(always))]
                 fn add_assign(a: &mut F, b: &F) {
                     #add_assign
                 }
 
-                #[inline(always)]
+                #[cfg_attr(not(feature = "bin-opt"), inline(always))]
                 fn sub_assign(a: &mut F, b: &F) {
                     // If `other` is larger than `self`, add the modulus to self first.
                     if b.0 > a.0 {
@@ -131,13 +131,13 @@ pub fn mont_config_helper(
                     __sub_with_borrow(&mut a.0, &b.0);
                 }
 
-                #[inline(always)]
+                #[cfg_attr(not(feature = "bin-opt"), inline(always))]
                 fn double_in_place(a: &mut F) {
                     #double_in_place
                 }
 
                 /// Sets `a = -a`.
-                #[inline(always)]
+                #[cfg_attr(not(feature = "bin-opt"), inline(always))]
                 fn neg_in_place(a: &mut F) {
                     if *a != F::ZERO {
                         let mut tmp = #modulus;
@@ -146,11 +146,11 @@ pub fn mont_config_helper(
                     }
                 }
 
-                #[inline(always)]
+                #[cfg_attr(not(feature = "bin-opt"), inline(always))]
                 fn mul_assign(a: &mut F, b: &F) {
                     #mul_assign
                 }
-                #[inline(always)]
+                #[cfg_attr(not(feature = "bin-opt"), inline(always))]
                 fn square_in_place(a: &mut F) {
                     #square_in_place
                 }

@@ -48,7 +48,7 @@ impl<const N: usize> MulBuffer<N> {
         Self::new(b, b)
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub(super) const fn get(&self, index: usize) -> &u64 {
         if index < N {
             &self.b0[index]
@@ -57,7 +57,7 @@ impl<const N: usize> MulBuffer<N> {
         }
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub(super) fn get_mut(&mut self, index: usize) -> &mut u64 {
         if index < N {
             &mut self.b0[index]
@@ -69,14 +69,14 @@ impl<const N: usize> MulBuffer<N> {
 
 impl<const N: usize> Index<usize> for MulBuffer<N> {
     type Output = u64;
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn index(&self, index: usize) -> &Self::Output {
         self.get(index)
     }
 }
 
 impl<const N: usize> IndexMut<usize> for MulBuffer<N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.get_mut(index)
     }
@@ -99,7 +99,7 @@ impl<const N: usize> SerBuffer<N> {
         }
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub(super) const fn get(&self, index: usize) -> &u8 {
         if index == 8 * N {
             &self.last
@@ -110,7 +110,7 @@ impl<const N: usize> SerBuffer<N> {
         }
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub(super) fn get_mut(&mut self, index: usize) -> &mut u8 {
         if index == 8 * N {
             &mut self.last
@@ -126,14 +126,14 @@ impl<const N: usize> SerBuffer<N> {
         unsafe { ark_std::slice::from_raw_parts((self as *const Self) as *const u8, 8 * N + 1) }
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub(super) fn last_n_plus_1_bytes_mut(&mut self) -> impl Iterator<Item = &mut u8> {
         self.buffers[N - 1]
             .iter_mut()
             .chain(ark_std::iter::once(&mut self.last))
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub(super) fn copy_from_u8_slice(&mut self, other: &[u8]) {
         other.chunks(8).enumerate().for_each(|(i, chunk)| {
             if i < N {
@@ -144,7 +144,7 @@ impl<const N: usize> SerBuffer<N> {
         });
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub(super) fn copy_from_u64_slice(&mut self, other: &[u64; N]) {
         other
             .iter()
@@ -152,7 +152,7 @@ impl<const N: usize> SerBuffer<N> {
             .for_each(|(other, this)| *this = other.to_le_bytes());
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub(super) fn to_bigint(self) -> BigInt<N> {
         let mut self_integer = BigInt::from(0u64);
         self_integer
@@ -163,7 +163,7 @@ impl<const N: usize> SerBuffer<N> {
         self_integer
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     /// Write up to `num_bytes` bytes from `self` to `other`.
     /// `num_bytes` is allowed to range from `8 * (N - 1) + 1` to `8 * N + 1`.
     pub(super) fn write_up_to(
@@ -189,7 +189,7 @@ impl<const N: usize> SerBuffer<N> {
         Ok(())
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     /// Read up to `num_bytes` bytes from `other` to `self`.
     /// `num_bytes` is allowed to range from `8 * (N - 1)` to `8 * N + 1`.
     pub(super) fn read_exact_up_to(
@@ -220,14 +220,14 @@ impl<const N: usize> SerBuffer<N> {
 
 impl<const N: usize> Index<usize> for SerBuffer<N> {
     type Output = u8;
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn index(&self, index: usize) -> &Self::Output {
         self.get(index)
     }
 }
 
 impl<const N: usize> IndexMut<usize> for SerBuffer<N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.get_mut(index)
     }

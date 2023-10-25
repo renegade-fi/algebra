@@ -9,7 +9,7 @@ use rayon::prelude::*;
 #[cfg(feature = "parallel")]
 const MIN_PARALLEL_CHUNK_SIZE: usize = 1 << 7;
 
-#[inline]
+#[cfg_attr(not(feature = "bin-opt"), inline)]
 pub(crate) fn bitreverse(mut n: u32, l: u32) -> u32 {
     let mut r = 0;
     for _ in 0..l {
@@ -91,7 +91,7 @@ pub(crate) fn best_fft<T: DomainCoeff<F>, F: FftField>(
 }
 
 #[cfg(not(feature = "parallel"))]
-#[inline]
+#[cfg_attr(not(feature = "bin-opt"), inline)]
 pub(crate) fn best_fft<T: DomainCoeff<F>, F: FftField>(
     a: &mut [T],
     omega: F,

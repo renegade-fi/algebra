@@ -10,7 +10,7 @@ pub enum TEFlags {
 }
 
 impl TEFlags {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub fn from_x_coordinate(x: impl Field) -> Self {
         if x <= -x {
             TEFlags::XIsPositive
@@ -19,14 +19,14 @@ impl TEFlags {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub fn is_negative(&self) -> bool {
         matches!(*self, TEFlags::XIsNegative)
     }
 }
 
 impl Default for TEFlags {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn default() -> Self {
         // XIsPositive doesn't change the serialization
         TEFlags::XIsPositive
@@ -36,7 +36,7 @@ impl Default for TEFlags {
 impl Flags for TEFlags {
     const BIT_SIZE: usize = 1;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn u8_bitmask(&self) -> u8 {
         let mut mask = 0;
         if let Self::XIsNegative = self {
@@ -45,7 +45,7 @@ impl Flags for TEFlags {
         mask
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_u8(value: u8) -> Option<Self> {
         let x_sign = (value >> 7) & 1 == 1;
         if x_sign {

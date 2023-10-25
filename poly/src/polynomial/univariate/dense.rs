@@ -54,7 +54,7 @@ impl<F: Field> Polynomial<F> for DensePolynomial<F> {
 const MIN_ELEMENTS_PER_THREAD: usize = 16;
 
 impl<F: Field> DensePolynomial<F> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     // Horner's method for polynomial evaluation
     fn horner_evaluate(poly_coeffs: &[F], point: &F) -> F {
         poly_coeffs
@@ -304,7 +304,7 @@ impl<'a, 'b, F: Field> Add<&'a DensePolynomial<F>> for &'b DensePolynomial<F> {
 impl<'a, 'b, F: Field> Add<&'a SparsePolynomial<F>> for &'b DensePolynomial<F> {
     type Output = DensePolynomial<F>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(self, other: &'a SparsePolynomial<F>) -> DensePolynomial<F> {
         if self.is_zero() {
             other.clone().into()
@@ -386,7 +386,7 @@ impl<'a, F: Field> AddAssign<(F, &'a DensePolynomial<F>)> for DensePolynomial<F>
 }
 
 impl<'a, F: Field> AddAssign<&'a SparsePolynomial<F>> for DensePolynomial<F> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add_assign(&mut self, other: &'a SparsePolynomial<F>) {
         if self.is_zero() {
             self.coeffs.truncate(0);
@@ -418,7 +418,7 @@ impl<'a, F: Field> AddAssign<&'a SparsePolynomial<F>> for DensePolynomial<F> {
 impl<F: Field> Neg for DensePolynomial<F> {
     type Output = DensePolynomial<F>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn neg(mut self) -> DensePolynomial<F> {
         self.coeffs.iter_mut().for_each(|coeff| {
             *coeff = -*coeff;
@@ -430,7 +430,7 @@ impl<F: Field> Neg for DensePolynomial<F> {
 impl<'a, 'b, F: Field> Sub<&'a DensePolynomial<F>> for &'b DensePolynomial<F> {
     type Output = DensePolynomial<F>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(self, other: &'a DensePolynomial<F>) -> DensePolynomial<F> {
         let mut result = if self.is_zero() {
             let mut result = other.clone();
@@ -464,7 +464,7 @@ impl<'a, 'b, F: Field> Sub<&'a DensePolynomial<F>> for &'b DensePolynomial<F> {
 impl<'a, 'b, F: Field> Sub<&'a SparsePolynomial<F>> for &'b DensePolynomial<F> {
     type Output = DensePolynomial<F>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(self, other: &'a SparsePolynomial<F>) -> DensePolynomial<F> {
         if self.is_zero() {
             let result = other.clone();
@@ -493,7 +493,7 @@ impl<'a, 'b, F: Field> Sub<&'a SparsePolynomial<F>> for &'b DensePolynomial<F> {
 }
 
 impl<'a, F: Field> SubAssign<&'a DensePolynomial<F>> for DensePolynomial<F> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub_assign(&mut self, other: &'a DensePolynomial<F>) {
         if self.is_zero() {
             self.coeffs.resize(other.coeffs.len(), F::zero());
@@ -518,7 +518,7 @@ impl<'a, F: Field> SubAssign<&'a DensePolynomial<F>> for DensePolynomial<F> {
 }
 
 impl<'a, F: Field> SubAssign<&'a SparsePolynomial<F>> for DensePolynomial<F> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub_assign(&mut self, other: &'a SparsePolynomial<F>) {
         if self.is_zero() {
             self.coeffs.truncate(0);
@@ -550,7 +550,7 @@ impl<'a, F: Field> SubAssign<&'a SparsePolynomial<F>> for DensePolynomial<F> {
 impl<'a, 'b, F: Field> Div<&'a DensePolynomial<F>> for &'b DensePolynomial<F> {
     type Output = DensePolynomial<F>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div(self, divisor: &'a DensePolynomial<F>) -> DensePolynomial<F> {
         let a = DenseOrSparsePolynomial::from(self);
         let b = DenseOrSparsePolynomial::from(divisor);
@@ -561,7 +561,7 @@ impl<'a, 'b, F: Field> Div<&'a DensePolynomial<F>> for &'b DensePolynomial<F> {
 impl<'b, F: Field> Mul<F> for &'b DensePolynomial<F> {
     type Output = DensePolynomial<F>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(self, elem: F) -> DensePolynomial<F> {
         if self.is_zero() || elem.is_zero() {
             DensePolynomial::zero()
@@ -579,7 +579,7 @@ impl<'b, F: Field> Mul<F> for &'b DensePolynomial<F> {
 impl<'a, 'b, F: FftField> Mul<&'a DensePolynomial<F>> for &'b DensePolynomial<F> {
     type Output = DensePolynomial<F>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(self, other: &'a DensePolynomial<F>) -> DensePolynomial<F> {
         if self.is_zero() || other.is_zero() {
             DensePolynomial::zero()

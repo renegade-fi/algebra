@@ -97,7 +97,7 @@ impl<P: SWCurveConfig> Hash for Projective<P> {
 
 impl<P: SWCurveConfig> Distribution<Projective<P>> for Standard {
     /// Generates a uniformly random instance of the curve.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Projective<P> {
         loop {
             let x = P::BaseField::rand(rng);
@@ -111,7 +111,7 @@ impl<P: SWCurveConfig> Distribution<Projective<P>> for Standard {
 }
 
 impl<P: SWCurveConfig> Default for Projective<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn default() -> Self {
         Self::zero()
     }
@@ -144,7 +144,7 @@ impl<P: SWCurveConfig> Zeroize for Projective<P> {
 
 impl<P: SWCurveConfig> Zero for Projective<P> {
     /// Returns the point at infinity, which always has Z = 0.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn zero() -> Self {
         Self::new_unchecked(
             P::BaseField::one(),
@@ -154,7 +154,7 @@ impl<P: SWCurveConfig> Zero for Projective<P> {
     }
 
     /// Checks whether `self.z.is_zero()`.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn is_zero(&self) -> bool {
         self.z == P::BaseField::ZERO
     }
@@ -163,7 +163,7 @@ impl<P: SWCurveConfig> Zero for Projective<P> {
 impl<P: SWCurveConfig> Group for Projective<P> {
     type ScalarField = P::ScalarField;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn generator() -> Self {
         Affine::generator().into()
     }
@@ -274,7 +274,7 @@ impl<P: SWCurveConfig> Group for Projective<P> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul_bigint(&self, other: impl AsRef<[u64]>) -> Self {
         P::mul_projective(self, other.as_ref())
     }
@@ -298,7 +298,7 @@ impl<P: SWCurveConfig> CurveGroup for Projective<P> {
     ///
     /// (Where batch inversion comprises 3N field multiplications + 1 inversion
     /// of these operations)
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn normalize_batch(v: &[Self]) -> Vec<Self::Affine> {
         let mut z_s = v.iter().map(|g| g.z).collect::<Vec<_>>();
         ark_ff::batch_inversion(&mut z_s);
@@ -322,7 +322,7 @@ impl<P: SWCurveConfig> CurveGroup for Projective<P> {
 impl<P: SWCurveConfig> Neg for Projective<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn neg(mut self) -> Self {
         self.y = -self.y;
         self
@@ -433,7 +433,7 @@ ark_ff::impl_additive_ops_from_ref!(Projective, SWCurveConfig);
 impl<'a, P: SWCurveConfig> Add<&'a Self> for Projective<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(mut self, other: &'a Self) -> Self {
         self += other;
         self
@@ -530,7 +530,7 @@ impl<'a, P: SWCurveConfig> AddAssign<&'a Self> for Projective<P> {
 impl<'a, P: SWCurveConfig> Sub<&'a Self> for Projective<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(mut self, other: &'a Self) -> Self {
         self -= other;
         self
@@ -552,7 +552,7 @@ impl<P: SWCurveConfig, T: Borrow<P::ScalarField>> MulAssign<T> for Projective<P>
 impl<P: SWCurveConfig, T: Borrow<P::ScalarField>> Mul<T> for Projective<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(mut self, other: T) -> Self {
         self *= other;
         self
@@ -562,7 +562,7 @@ impl<P: SWCurveConfig, T: Borrow<P::ScalarField>> Mul<T> for Projective<P> {
 // The affine point X, Y is represented in the Jacobian
 // coordinates with Z = 1.
 impl<P: SWCurveConfig> From<Affine<P>> for Projective<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(p: Affine<P>) -> Projective<P> {
         p.xy().map_or(Projective::zero(), |(&x, &y)| Self {
             x,
@@ -573,7 +573,7 @@ impl<P: SWCurveConfig> From<Affine<P>> for Projective<P> {
 }
 
 impl<P: SWCurveConfig> CanonicalSerialize for Projective<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         writer: W,
@@ -583,7 +583,7 @@ impl<P: SWCurveConfig> CanonicalSerialize for Projective<P> {
         P::serialize_with_mode(&aff, writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         P::serialized_size(compress)
     }
@@ -621,7 +621,7 @@ impl<M: SWCurveConfig, ConstraintF: Field> ToConstraintField<ConstraintF> for Pr
 where
     M::BaseField: ToConstraintField<ConstraintF>,
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
         Affine::from(*self).to_field_elements()
     }

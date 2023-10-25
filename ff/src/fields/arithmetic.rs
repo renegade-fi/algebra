@@ -6,7 +6,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<P: $params> core::ops::Add<Self> for $type<P> {
             type Output = Self;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn add(self, other: Self) -> Self {
                 let mut result = self;
                 result.add_assign(&other);
@@ -18,7 +18,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<'a, P: $params> core::ops::Add<&'a mut Self> for $type<P> {
             type Output = Self;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn add(self, other: &'a mut Self) -> Self {
                 let mut result = self;
                 result.add_assign(&*other);
@@ -29,7 +29,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<'b, P: $params> core::ops::Add<$type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn add(self, mut other: $type<P>) -> $type<P> {
                 other.add_assign(self);
                 other
@@ -40,7 +40,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<'a, 'b, P: $params> core::ops::Add<&'a $type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn add(self, other: &'a $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.add_assign(&*other);
@@ -52,7 +52,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<'a, 'b, P: $params> core::ops::Add<&'a mut $type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn add(self, other: &'a mut $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.add_assign(&*other);
@@ -63,7 +63,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<'b, P: $params> core::ops::Sub<$type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn sub(self, other: $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.sub_assign(&other);
@@ -75,7 +75,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<'a, 'b, P: $params> core::ops::Sub<&'a $type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn sub(self, other: &'a $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.sub_assign(&*other);
@@ -87,7 +87,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<'a, 'b, P: $params> core::ops::Sub<&'a mut $type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn sub(self, other: &'a mut $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.sub_assign(&*other);
@@ -99,7 +99,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<P: $params> core::ops::Sub<Self> for $type<P> {
             type Output = Self;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn sub(self, other: Self) -> Self {
                 let mut result = self;
                 result.sub_assign(&other);
@@ -111,7 +111,7 @@ macro_rules! impl_additive_ops_from_ref {
         impl<'a, P: $params> core::ops::Sub<&'a mut Self> for $type<P> {
             type Output = Self;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn sub(self, other: &'a mut Self) -> Self {
                 let mut result = self;
                 result.sub_assign(&*other);
@@ -171,7 +171,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<P: $params> core::ops::Mul<Self> for $type<P> {
             type Output = Self;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn mul(self, other: Self) -> Self {
                 let mut result = self;
                 result.mul_assign(&other);
@@ -183,7 +183,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<P: $params> core::ops::Div<Self> for $type<P> {
             type Output = Self;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn div(self, other: Self) -> Self {
                 let mut result = self;
                 result.div_assign(&other);
@@ -195,7 +195,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<'a, P: $params> core::ops::Mul<&'a mut Self> for $type<P> {
             type Output = Self;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn mul(self, other: &'a mut Self) -> Self {
                 let mut result = self;
                 result.mul_assign(&*other);
@@ -207,7 +207,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<'a, P: $params> core::ops::Div<&'a mut Self> for $type<P> {
             type Output = Self;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn div(self, other: &'a mut Self) -> Self {
                 let mut result = self;
                 result.div_assign(&*other);
@@ -218,7 +218,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<'b, P: $params> core::ops::Mul<$type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn mul(self, mut other: $type<P>) -> $type<P> {
                 other.mul_assign(self);
                 other
@@ -229,7 +229,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<'a, 'b, P: $params> core::ops::Mul<&'a $type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn mul(self, other: &'a $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.mul_assign(&*other);
@@ -241,7 +241,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<'a, 'b, P: $params> core::ops::Mul<&'a mut $type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn mul(self, other: &'a mut $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.mul_assign(&*other);
@@ -252,7 +252,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<'b, P: $params> core::ops::Div<$type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn div(self, other: $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.div_assign(&other);
@@ -264,7 +264,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<'a, 'b, P: $params> core::ops::Div<&'a $type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn div(self, other: &'a $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.div_assign(&*other);
@@ -276,7 +276,7 @@ macro_rules! impl_multiplicative_ops_from_ref {
         impl<'a, 'b, P: $params> core::ops::Div<&'a mut $type<P>> for &'b $type<P> {
             type Output = $type<P>;
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn div(self, other: &'a mut $type<P>) -> $type<P> {
                 let mut result = *self;
                 result.div_assign(&*other);

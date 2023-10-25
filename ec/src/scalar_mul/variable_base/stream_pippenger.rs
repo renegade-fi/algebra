@@ -36,7 +36,7 @@ impl<G: VariableBaseMSM> ChunkedPippenger<G> {
     }
 
     /// Add a new (base, scalar) pair into the instance.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub fn add<B, S>(&mut self, base: B, scalar: S)
     where
         B: Borrow<G::MulBase>,
@@ -55,7 +55,7 @@ impl<G: VariableBaseMSM> ChunkedPippenger<G> {
     }
 
     /// Output the final Pippenger algorithm result.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub fn finalize(mut self) -> G {
         if !self.scalars_buffer.is_empty() {
             self.result +=
@@ -83,7 +83,7 @@ impl<G: VariableBaseMSM> HashMapPippenger<G> {
     }
 
     /// Add a new (base, scalar) pair into the hash map.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub fn add<B, S>(&mut self, base: B, scalar: S)
     where
         B: Borrow<G::MulBase>,
@@ -108,7 +108,7 @@ impl<G: VariableBaseMSM> HashMapPippenger<G> {
     }
 
     /// Update the final result with (base, scalar) pairs in the hash map.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     pub fn finalize(mut self) -> G {
         if !self.buffer.is_empty() {
             let bases = self.buffer.keys().cloned().collect::<Vec<_>>();

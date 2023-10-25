@@ -132,19 +132,19 @@ pub type Fp832<P> = Fp<P, 13>;
 
 impl<P: FpConfig<N>, const N: usize> Fp<P, N> {
     #[doc(hidden)]
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub fn is_geq_modulus(&self) -> bool {
         self.0 >= P::MODULUS
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn subtract_modulus(&mut self) {
         if self.is_geq_modulus() {
             self.0.sub_with_borrow(&Self::MODULUS);
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn subtract_modulus_with_carry(&mut self, carry: bool) {
         if carry || self.is_geq_modulus() {
             self.0.sub_with_borrow(&Self::MODULUS);
@@ -163,24 +163,24 @@ impl<P: FpConfig<N>, const N: usize> ark_std::fmt::Debug for Fp<P, N> {
 }
 
 impl<P: FpConfig<N>, const N: usize> Zero for Fp<P, N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn zero() -> Self {
         P::ZERO
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn is_zero(&self) -> bool {
         *self == P::ZERO
     }
 }
 
 impl<P: FpConfig<N>, const N: usize> One for Fp<P, N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn one() -> Self {
         P::ONE
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn is_one(&self) -> bool {
         *self == P::ONE
     }
@@ -213,36 +213,36 @@ impl<P: FpConfig<N>, const N: usize> Field for Fp<P, N> {
         Some(elems[0])
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn double(&self) -> Self {
         let mut temp = *self;
         temp.double_in_place();
         temp
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn double_in_place(&mut self) -> &mut Self {
         P::double_in_place(self);
         self
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn neg_in_place(&mut self) -> &mut Self {
         P::neg_in_place(self);
         self
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn characteristic() -> &'static [u64] {
         P::MODULUS.as_ref()
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sum_of_products<const T: usize>(a: &[Self; T], b: &[Self; T]) -> Self {
         P::sum_of_products(a, b)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_random_bytes_with_flags<F: Flags>(bytes: &[u8]) -> Option<(Self, F)> {
         if F::BIT_SIZE > 8 {
             None
@@ -288,7 +288,7 @@ impl<P: FpConfig<N>, const N: usize> Field for Fp<P, N> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn square(&self) -> Self {
         let mut temp = *self;
         temp.square_in_place();
@@ -300,7 +300,7 @@ impl<P: FpConfig<N>, const N: usize> Field for Fp<P, N> {
         self
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn inverse(&self) -> Option<Self> {
         P::inverse(self)
     }
@@ -315,10 +315,10 @@ impl<P: FpConfig<N>, const N: usize> Field for Fp<P, N> {
     }
 
     /// The Frobenius map has no effect in a prime field.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn frobenius_map_in_place(&mut self, _: usize) {}
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn legendre(&self) -> LegendreSymbol {
         use crate::fields::LegendreSymbol::*;
 
@@ -342,7 +342,7 @@ impl<P: FpConfig<N>, const N: usize> PrimeField for Fp<P, N> {
     const TRACE: Self::BigInt = P::MODULUS.two_adic_coefficient();
     const TRACE_MINUS_ONE_DIV_TWO: Self::BigInt = Self::TRACE.divide_by_2_round_down();
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_bigint(r: BigInt<N>) -> Option<Self> {
         P::from_bigint(r)
     }
@@ -368,7 +368,7 @@ impl<P: FpConfig<N>, const N: usize> FftField for Fp<P, N> {
 /// any ordering suffices (like in a BTreeMap), and not in applications
 /// where a particular ordering is required.
 impl<P: FpConfig<N>, const N: usize> Ord for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn cmp(&self, other: &Self) -> Ordering {
         self.into_bigint().cmp(&other.into_bigint())
     }
@@ -381,7 +381,7 @@ impl<P: FpConfig<N>, const N: usize> Ord for Fp<P, N> {
 /// any ordering suffices (like in a BTreeMap), and not in applications
 /// where a particular ordering is required.
 impl<P: FpConfig<N>, const N: usize> PartialOrd for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
@@ -513,7 +513,7 @@ impl<P: FpConfig<N>, const N: usize> From<i8> for Fp<P, N> {
 impl<P: FpConfig<N>, const N: usize> ark_std::rand::distributions::Distribution<Fp<P, N>>
     for ark_std::rand::distributions::Standard
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sample<R: ark_std::rand::Rng + ?Sized>(&self, rng: &mut R) -> Fp<P, N> {
         loop {
             let mut tmp = Fp(
@@ -579,7 +579,7 @@ impl<P: FpConfig<N>, const N: usize> CanonicalSerializeWithFlags for Fp<P, N> {
 }
 
 impl<P: FpConfig<N>, const N: usize> CanonicalSerialize for Fp<P, N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: ark_std::io::Write>(
         &self,
         writer: W,
@@ -588,7 +588,7 @@ impl<P: FpConfig<N>, const N: usize> CanonicalSerialize for Fp<P, N> {
         self.serialize_with_flags(writer, EmptyFlags)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, _compress: Compress) -> usize {
         self.serialized_size_with_flags::<EmptyFlags>()
     }
@@ -686,7 +686,7 @@ impl<P: FpConfig<N>, const N: usize> FromStr for Fp<P, N> {
 /// Outputs a string containing the value of `self`,
 /// represented as a decimal without leading zeroes.
 impl<P: FpConfig<N>, const N: usize> Display for Fp<P, N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         let string = self.into_bigint().to_string();
         write!(f, "{}", string.trim_start_matches('0'))
@@ -695,7 +695,7 @@ impl<P: FpConfig<N>, const N: usize> Display for Fp<P, N> {
 
 impl<P: FpConfig<N>, const N: usize> Neg for Fp<P, N> {
     type Output = Self;
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     #[must_use]
     fn neg(mut self) -> Self {
         P::neg_in_place(&mut self);
@@ -706,7 +706,7 @@ impl<P: FpConfig<N>, const N: usize> Neg for Fp<P, N> {
 impl<'a, P: FpConfig<N>, const N: usize> Add<&'a Fp<P, N>> for Fp<P, N> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(mut self, other: &Self) -> Self {
         self.add_assign(other);
         self
@@ -716,7 +716,7 @@ impl<'a, P: FpConfig<N>, const N: usize> Add<&'a Fp<P, N>> for Fp<P, N> {
 impl<'a, P: FpConfig<N>, const N: usize> Sub<&'a Fp<P, N>> for Fp<P, N> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(mut self, other: &Self) -> Self {
         self.sub_assign(other);
         self
@@ -726,7 +726,7 @@ impl<'a, P: FpConfig<N>, const N: usize> Sub<&'a Fp<P, N>> for Fp<P, N> {
 impl<'a, P: FpConfig<N>, const N: usize> Mul<&'a Fp<P, N>> for Fp<P, N> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(mut self, other: &Self) -> Self {
         self.mul_assign(other);
         self
@@ -738,7 +738,7 @@ impl<'a, P: FpConfig<N>, const N: usize> Div<&'a Fp<P, N>> for Fp<P, N> {
 
     /// Returns `self * other.inverse()` if `other.inverse()` is `Some`, and
     /// panics otherwise.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div(mut self, other: &Self) -> Self {
         self.mul_assign(&other.inverse().unwrap());
         self
@@ -748,7 +748,7 @@ impl<'a, P: FpConfig<N>, const N: usize> Div<&'a Fp<P, N>> for Fp<P, N> {
 impl<'a, 'b, P: FpConfig<N>, const N: usize> Add<&'b Fp<P, N>> for &'a Fp<P, N> {
     type Output = Fp<P, N>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(self, other: &'b Fp<P, N>) -> Fp<P, N> {
         let mut result = *self;
         result.add_assign(other);
@@ -759,7 +759,7 @@ impl<'a, 'b, P: FpConfig<N>, const N: usize> Add<&'b Fp<P, N>> for &'a Fp<P, N> 
 impl<'a, 'b, P: FpConfig<N>, const N: usize> Sub<&'b Fp<P, N>> for &'a Fp<P, N> {
     type Output = Fp<P, N>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(self, other: &Fp<P, N>) -> Fp<P, N> {
         let mut result = *self;
         result.sub_assign(other);
@@ -770,7 +770,7 @@ impl<'a, 'b, P: FpConfig<N>, const N: usize> Sub<&'b Fp<P, N>> for &'a Fp<P, N> 
 impl<'a, 'b, P: FpConfig<N>, const N: usize> Mul<&'b Fp<P, N>> for &'a Fp<P, N> {
     type Output = Fp<P, N>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(self, other: &Fp<P, N>) -> Fp<P, N> {
         let mut result = *self;
         result.mul_assign(other);
@@ -781,7 +781,7 @@ impl<'a, 'b, P: FpConfig<N>, const N: usize> Mul<&'b Fp<P, N>> for &'a Fp<P, N> 
 impl<'a, 'b, P: FpConfig<N>, const N: usize> Div<&'b Fp<P, N>> for &'a Fp<P, N> {
     type Output = Fp<P, N>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div(self, other: &Fp<P, N>) -> Fp<P, N> {
         let mut result = *self;
         result.div_assign(other);
@@ -790,14 +790,14 @@ impl<'a, 'b, P: FpConfig<N>, const N: usize> Div<&'b Fp<P, N>> for &'a Fp<P, N> 
 }
 
 impl<'a, P: FpConfig<N>, const N: usize> AddAssign<&'a Self> for Fp<P, N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add_assign(&mut self, other: &Self) {
         P::add_assign(self, other)
     }
 }
 
 impl<'a, P: FpConfig<N>, const N: usize> SubAssign<&'a Self> for Fp<P, N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub_assign(&mut self, other: &Self) {
         P::sub_assign(self, other);
     }
@@ -807,7 +807,7 @@ impl<'a, P: FpConfig<N>, const N: usize> SubAssign<&'a Self> for Fp<P, N> {
 impl<P: FpConfig<N>, const N: usize> core::ops::Add<Self> for Fp<P, N> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(mut self, other: Self) -> Self {
         self.add_assign(&other);
         self
@@ -818,7 +818,7 @@ impl<P: FpConfig<N>, const N: usize> core::ops::Add<Self> for Fp<P, N> {
 impl<'a, P: FpConfig<N>, const N: usize> core::ops::Add<&'a mut Self> for Fp<P, N> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(mut self, other: &'a mut Self) -> Self {
         self.add_assign(&*other);
         self
@@ -829,7 +829,7 @@ impl<'a, P: FpConfig<N>, const N: usize> core::ops::Add<&'a mut Self> for Fp<P, 
 impl<P: FpConfig<N>, const N: usize> core::ops::Sub<Self> for Fp<P, N> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(mut self, other: Self) -> Self {
         self.sub_assign(&other);
         self
@@ -840,7 +840,7 @@ impl<P: FpConfig<N>, const N: usize> core::ops::Sub<Self> for Fp<P, N> {
 impl<'a, P: FpConfig<N>, const N: usize> core::ops::Sub<&'a mut Self> for Fp<P, N> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(mut self, other: &'a mut Self) -> Self {
         self.sub_assign(&*other);
         self
@@ -863,7 +863,7 @@ impl<'a, P: FpConfig<N>, const N: usize> core::iter::Sum<&'a Self> for Fp<P, N> 
 
 #[allow(unused_qualifications)]
 impl<P: FpConfig<N>, const N: usize> core::ops::AddAssign<Self> for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn add_assign(&mut self, other: Self) {
         self.add_assign(&other)
     }
@@ -871,7 +871,7 @@ impl<P: FpConfig<N>, const N: usize> core::ops::AddAssign<Self> for Fp<P, N> {
 
 #[allow(unused_qualifications)]
 impl<P: FpConfig<N>, const N: usize> core::ops::SubAssign<Self> for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn sub_assign(&mut self, other: Self) {
         self.sub_assign(&other)
     }
@@ -879,7 +879,7 @@ impl<P: FpConfig<N>, const N: usize> core::ops::SubAssign<Self> for Fp<P, N> {
 
 #[allow(unused_qualifications)]
 impl<'a, P: FpConfig<N>, const N: usize> core::ops::AddAssign<&'a mut Self> for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn add_assign(&mut self, other: &'a mut Self) {
         self.add_assign(&*other)
     }
@@ -887,7 +887,7 @@ impl<'a, P: FpConfig<N>, const N: usize> core::ops::AddAssign<&'a mut Self> for 
 
 #[allow(unused_qualifications)]
 impl<'a, P: FpConfig<N>, const N: usize> core::ops::SubAssign<&'a mut Self> for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn sub_assign(&mut self, other: &'a mut Self) {
         self.sub_assign(&*other)
     }
@@ -902,7 +902,7 @@ impl<'a, P: FpConfig<N>, const N: usize> MulAssign<&'a Self> for Fp<P, N> {
 /// Computes `self *= other.inverse()` if `other.inverse()` is `Some`, and
 /// panics otherwise.
 impl<'a, P: FpConfig<N>, const N: usize> DivAssign<&'a Self> for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn div_assign(&mut self, other: &Self) {
         self.mul_assign(&other.inverse().unwrap());
     }
@@ -912,7 +912,7 @@ impl<'a, P: FpConfig<N>, const N: usize> DivAssign<&'a Self> for Fp<P, N> {
 impl<P: FpConfig<N>, const N: usize> core::ops::Mul<Self> for Fp<P, N> {
     type Output = Self;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul(mut self, other: Self) -> Self {
         self.mul_assign(&other);
         self
@@ -923,7 +923,7 @@ impl<P: FpConfig<N>, const N: usize> core::ops::Mul<Self> for Fp<P, N> {
 impl<P: FpConfig<N>, const N: usize> core::ops::Div<Self> for Fp<P, N> {
     type Output = Self;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn div(mut self, other: Self) -> Self {
         self.div_assign(&other);
         self
@@ -934,7 +934,7 @@ impl<P: FpConfig<N>, const N: usize> core::ops::Div<Self> for Fp<P, N> {
 impl<'a, P: FpConfig<N>, const N: usize> core::ops::Mul<&'a mut Self> for Fp<P, N> {
     type Output = Self;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul(mut self, other: &'a mut Self) -> Self {
         self.mul_assign(&*other);
         self
@@ -945,7 +945,7 @@ impl<'a, P: FpConfig<N>, const N: usize> core::ops::Mul<&'a mut Self> for Fp<P, 
 impl<'a, P: FpConfig<N>, const N: usize> core::ops::Div<&'a mut Self> for Fp<P, N> {
     type Output = Self;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn div(mut self, other: &'a mut Self) -> Self {
         self.div_assign(&*other);
         self
@@ -968,7 +968,7 @@ impl<'a, P: FpConfig<N>, const N: usize> core::iter::Product<&'a Self> for Fp<P,
 
 #[allow(unused_qualifications)]
 impl<P: FpConfig<N>, const N: usize> core::ops::MulAssign<Self> for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_assign(&mut self, other: Self) {
         self.mul_assign(&other)
     }
@@ -976,7 +976,7 @@ impl<P: FpConfig<N>, const N: usize> core::ops::MulAssign<Self> for Fp<P, N> {
 
 #[allow(unused_qualifications)]
 impl<'a, P: FpConfig<N>, const N: usize> core::ops::DivAssign<&'a mut Self> for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn div_assign(&mut self, other: &'a mut Self) {
         self.div_assign(&*other)
     }
@@ -984,7 +984,7 @@ impl<'a, P: FpConfig<N>, const N: usize> core::ops::DivAssign<&'a mut Self> for 
 
 #[allow(unused_qualifications)]
 impl<'a, P: FpConfig<N>, const N: usize> core::ops::MulAssign<&'a mut Self> for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_assign(&mut self, other: &'a mut Self) {
         self.mul_assign(&*other)
     }
@@ -992,7 +992,7 @@ impl<'a, P: FpConfig<N>, const N: usize> core::ops::MulAssign<&'a mut Self> for 
 
 #[allow(unused_qualifications)]
 impl<P: FpConfig<N>, const N: usize> core::ops::DivAssign<Self> for Fp<P, N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn div_assign(&mut self, other: Self) {
         self.div_assign(&other)
     }
@@ -1007,21 +1007,21 @@ impl<P: FpConfig<N>, const N: usize> zeroize::Zeroize for Fp<P, N> {
 }
 
 impl<P: FpConfig<N>, const N: usize> From<num_bigint::BigUint> for Fp<P, N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: num_bigint::BigUint) -> Fp<P, N> {
         Fp::<P, N>::from_le_bytes_mod_order(&val.to_bytes_le())
     }
 }
 
 impl<P: FpConfig<N>, const N: usize> From<Fp<P, N>> for num_bigint::BigUint {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn from(other: Fp<P, N>) -> Self {
         other.into_bigint().into()
     }
 }
 
 impl<P: FpConfig<N>, const N: usize> From<Fp<P, N>> for BigInt<N> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn from(fp: Fp<P, N>) -> Self {
         fp.into_bigint()
     }
@@ -1029,7 +1029,7 @@ impl<P: FpConfig<N>, const N: usize> From<Fp<P, N>> for BigInt<N> {
 
 impl<P: FpConfig<N>, const N: usize> From<BigInt<N>> for Fp<P, N> {
     /// Converts `Self::BigInteger` into `Self`
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn from(int: BigInt<N>) -> Self {
         Self::from_bigint(int).unwrap()
     }

@@ -135,7 +135,7 @@ pub struct PairingOutput<P: Pairing>(pub P::TargetField);
 
 impl<P: Pairing> CanonicalSerialize for PairingOutput<P> {
     #[allow(unused_qualifications)]
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         writer: W,
@@ -144,7 +144,7 @@ impl<P: Pairing> CanonicalSerialize for PairingOutput<P> {
         self.0.serialize_with_mode(writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         self.0.serialized_size(compress)
     }
@@ -194,7 +194,7 @@ impl<P: Pairing> Zero for PairingOutput<P> {
 impl<'a, P: Pairing> Add<&'a Self> for PairingOutput<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(mut self, other: &'a Self) -> Self {
         self += other;
         self
@@ -216,7 +216,7 @@ impl<'a, P: Pairing> SubAssign<&'a Self> for PairingOutput<P> {
 impl<'a, P: Pairing> Sub<&'a Self> for PairingOutput<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(mut self, other: &'a Self) -> Self {
         self -= other;
         self
@@ -248,14 +248,14 @@ impl<P: Pairing> Zeroize for PairingOutput<P> {
 impl<P: Pairing> Neg for PairingOutput<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn neg(self) -> Self {
         Self(self.0.cyclotomic_inverse().unwrap())
     }
 }
 
 impl<P: Pairing> Distribution<PairingOutput<P>> for Standard {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> PairingOutput<P> {
         // Sample a random G1 element
         let g1 = P::G1::rand(rng);

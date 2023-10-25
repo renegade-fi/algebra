@@ -186,7 +186,7 @@ impl<P: SWCurveConfig> Zeroize for Affine<P> {
 
 impl<P: SWCurveConfig> Distribution<Affine<P>> for Standard {
     /// Generates a uniformly random instance of the curve.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Affine<P> {
         loop {
             let x = P::BaseField::rand(rng);
@@ -209,7 +209,7 @@ impl<P: SWCurveConfig> AffineRepr for Affine<P> {
         (!self.infinity).then(|| (&self.x, &self.y))
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn generator() -> Self {
         P::GENERATOR
     }
@@ -261,7 +261,7 @@ impl<P: SWCurveConfig> Neg for Affine<P> {
 
     /// If `self.is_zero()`, returns `self` (`== Self::zero()`).
     /// Else, returns `(x, -y)`, where `self = (x, y)`.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn neg(mut self) -> Self {
         self.y.neg_in_place();
         self
@@ -302,7 +302,7 @@ impl<P: SWCurveConfig, T: Borrow<Self>> Sub<T> for Affine<P> {
 }
 
 impl<P: SWCurveConfig> Default for Affine<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn default() -> Self {
         Self::identity()
     }
@@ -311,7 +311,7 @@ impl<P: SWCurveConfig> Default for Affine<P> {
 impl<P: SWCurveConfig, T: Borrow<P::ScalarField>> Mul<T> for Affine<P> {
     type Output = Projective<P>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(self, other: T) -> Self::Output {
         self.mul_bigint(other.borrow().into_bigint())
     }
@@ -320,7 +320,7 @@ impl<P: SWCurveConfig, T: Borrow<P::ScalarField>> Mul<T> for Affine<P> {
 // The projective point X, Y, Z is represented in the affine
 // coordinates as X/Z^2, Y/Z^3.
 impl<P: SWCurveConfig> From<Projective<P>> for Affine<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(p: Projective<P>) -> Affine<P> {
         if p.is_zero() {
             Affine::identity()
@@ -344,7 +344,7 @@ impl<P: SWCurveConfig> From<Projective<P>> for Affine<P> {
 }
 
 impl<P: SWCurveConfig> CanonicalSerialize for Affine<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         writer: W,
@@ -353,7 +353,7 @@ impl<P: SWCurveConfig> CanonicalSerialize for Affine<P> {
         P::serialize_with_mode(self, writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         P::serialized_size(compress)
     }
@@ -383,7 +383,7 @@ impl<M: SWCurveConfig, ConstraintF: Field> ToConstraintField<ConstraintF> for Af
 where
     M::BaseField: ToConstraintField<ConstraintF>,
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
         let mut x = self.x.to_field_elements()?;
         let y = self.y.to_field_elements()?;

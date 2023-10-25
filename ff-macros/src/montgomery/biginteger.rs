@@ -15,7 +15,7 @@ pub(super) fn add_with_carry_impl(num_limbs: usize) -> proc_macro2::TokenStream 
         carry != 0
     });
     quote! {
-        #[inline(always)]
+        #[cfg_attr(not(feature = "bin-opt"), inline(always))]
         fn __add_with_carry(
             a: &mut B,
             b: & B,
@@ -40,7 +40,7 @@ pub(super) fn sub_with_borrow_impl(num_limbs: usize) -> proc_macro2::TokenStream
         borrow != 0
     });
     quote! {
-        #[inline(always)]
+        #[cfg_attr(not(feature = "bin-opt"), inline(always))]
         fn __sub_with_borrow(
             a: &mut B,
             b: & B,
@@ -54,14 +54,14 @@ pub(super) fn subtract_modulus_impl(
     modulus: &proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
     quote! {
-        #[inline(always)]
+        #[cfg_attr(not(feature = "bin-opt"), inline(always))]
         fn __subtract_modulus(a: &mut F) {
             if a.is_geq_modulus() {
                 __sub_with_borrow(&mut a.0, &#modulus);
             }
         }
 
-        #[inline(always)]
+        #[cfg_attr(not(feature = "bin-opt"), inline(always))]
         fn __subtract_modulus_with_carry(a: &mut F, carry: bool) {
             if a.is_geq_modulus() || carry {
                 __sub_with_borrow(&mut a.0, &#modulus);

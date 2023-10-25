@@ -84,7 +84,7 @@ impl<'a, F: Field> DenseOrSparsePolynomial<'a, F> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn leading_coefficient(&self) -> Option<&F> {
         match self {
             SPolynomial(p) => p.last().map(|(_, c)| c),
@@ -92,7 +92,7 @@ impl<'a, F: Field> DenseOrSparsePolynomial<'a, F> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn iter_with_index(&self) -> Vec<(usize, F)> {
         match self {
             SPolynomial(p) => p.to_vec(),

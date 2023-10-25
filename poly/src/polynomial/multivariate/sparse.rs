@@ -236,7 +236,7 @@ impl<'a, F: Field, T: Term> AddAssign<(F, &'a SparsePolynomial<F, T>)> for Spars
 impl<F: Field, T: Term> Neg for SparsePolynomial<F, T> {
     type Output = SparsePolynomial<F, T>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn neg(mut self) -> SparsePolynomial<F, T> {
         for coeff in &mut self.terms {
             (coeff).0 = -coeff.0;
@@ -248,7 +248,7 @@ impl<F: Field, T: Term> Neg for SparsePolynomial<F, T> {
 impl<'a, 'b, F: Field, T: Term> Sub<&'a SparsePolynomial<F, T>> for &'b SparsePolynomial<F, T> {
     type Output = SparsePolynomial<F, T>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(self, other: &'a SparsePolynomial<F, T>) -> SparsePolynomial<F, T> {
         let neg_other = other.clone().neg();
         self + &neg_other
@@ -256,7 +256,7 @@ impl<'a, 'b, F: Field, T: Term> Sub<&'a SparsePolynomial<F, T>> for &'b SparsePo
 }
 
 impl<'a, F: Field, T: Term> SubAssign<&'a SparsePolynomial<F, T>> for SparsePolynomial<F, T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub_assign(&mut self, other: &'a SparsePolynomial<F, T>) {
         *self = &*self - other;
     }

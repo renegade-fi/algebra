@@ -18,7 +18,7 @@ impl Valid for bool {
 }
 
 impl CanonicalSerialize for bool {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -28,14 +28,14 @@ impl CanonicalSerialize for bool {
         Ok(())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, _compress: Compress) -> usize {
         1
     }
 }
 
 impl CanonicalDeserialize for bool {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         reader: R,
         compress: Compress,
@@ -52,7 +52,7 @@ impl CanonicalDeserialize for bool {
 macro_rules! impl_uint {
     ($type:ty) => {
         impl CanonicalSerialize for $type {
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn serialize_with_mode<W: Write>(
                 &self,
                 mut writer: W,
@@ -61,19 +61,19 @@ macro_rules! impl_uint {
                 Ok(writer.write_all(&self.to_le_bytes())?)
             }
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn serialized_size(&self, _compress: Compress) -> usize {
                 core::mem::size_of::<$type>()
             }
         }
 
         impl Valid for $type {
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn check(&self) -> Result<(), SerializationError> {
                 Ok(())
             }
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn batch_check<'a>(
                 _batch: impl Iterator<Item = &'a Self>,
             ) -> Result<(), SerializationError>
@@ -85,7 +85,7 @@ macro_rules! impl_uint {
         }
 
         impl CanonicalDeserialize for $type {
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn deserialize_with_mode<R: Read>(
                 mut reader: R,
                 _compress: Compress,
@@ -105,7 +105,7 @@ impl_uint!(u32);
 impl_uint!(u64);
 
 impl CanonicalSerialize for usize {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -114,19 +114,19 @@ impl CanonicalSerialize for usize {
         Ok(writer.write_all(&(*self as u64).to_le_bytes())?)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, _compress: Compress) -> usize {
         core::mem::size_of::<u64>()
     }
 }
 
 impl Valid for usize {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         Ok(())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn batch_check<'a>(_batch: impl Iterator<Item = &'a Self>) -> Result<(), SerializationError>
     where
         Self: 'a,
@@ -136,7 +136,7 @@ impl Valid for usize {
 }
 
 impl CanonicalDeserialize for usize {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         mut reader: R,
         _compress: Compress,
@@ -149,7 +149,7 @@ impl CanonicalDeserialize for usize {
 }
 
 impl CanonicalSerialize for BigUint {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         writer: W,
@@ -158,14 +158,14 @@ impl CanonicalSerialize for BigUint {
         self.to_bytes_le().serialize_with_mode(writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         self.to_bytes_le().serialized_size(compress)
     }
 }
 
 impl CanonicalDeserialize for BigUint {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         reader: R,
         compress: Compress,
@@ -178,12 +178,12 @@ impl CanonicalDeserialize for BigUint {
 }
 
 impl Valid for BigUint {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         Ok(())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn batch_check<'a>(_batch: impl Iterator<Item = &'a Self>) -> Result<(), SerializationError>
     where
         Self: 'a,
@@ -193,7 +193,7 @@ impl Valid for BigUint {
 }
 
 impl<T: CanonicalSerialize> CanonicalSerialize for Option<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -207,7 +207,7 @@ impl<T: CanonicalSerialize> CanonicalSerialize for Option<T> {
         Ok(())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         1 + self
             .as_ref()
@@ -217,7 +217,7 @@ impl<T: CanonicalSerialize> CanonicalSerialize for Option<T> {
 }
 
 impl<T: Valid> Valid for Option<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         match self {
             Some(v) => v.check(),
@@ -225,7 +225,7 @@ impl<T: Valid> Valid for Option<T> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn batch_check<'a>(
         batch: impl Iterator<Item = &'a Self> + Send,
     ) -> Result<(), SerializationError>
@@ -237,7 +237,7 @@ impl<T: Valid> Valid for Option<T> {
 }
 
 impl<T: CanonicalDeserialize> CanonicalDeserialize for Option<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         mut reader: R,
         compress: Compress,
@@ -256,7 +256,7 @@ impl<T: CanonicalDeserialize> CanonicalDeserialize for Option<T> {
 
 // No-op
 impl<T> CanonicalSerialize for PhantomData<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         _writer: W,
@@ -265,21 +265,21 @@ impl<T> CanonicalSerialize for PhantomData<T> {
         Ok(())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, _compress: Compress) -> usize {
         0
     }
 }
 
 impl<T: Sync> Valid for PhantomData<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         Ok(())
     }
 }
 
 impl<T: Send + Sync> CanonicalDeserialize for PhantomData<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         _reader: R,
         _compress: Compress,
@@ -290,7 +290,7 @@ impl<T: Send + Sync> CanonicalDeserialize for PhantomData<T> {
 }
 
 impl<T: CanonicalSerialize + ToOwned> CanonicalSerialize for Rc<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -299,7 +299,7 @@ impl<T: CanonicalSerialize + ToOwned> CanonicalSerialize for Rc<T> {
         self.as_ref().serialize_with_mode(&mut writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         self.as_ref().serialized_size(compress)
     }
@@ -307,7 +307,7 @@ impl<T: CanonicalSerialize + ToOwned> CanonicalSerialize for Rc<T> {
 
 #[cfg(feature = "std")]
 impl<T: CanonicalSerialize + ToOwned> CanonicalSerialize for ark_std::sync::Arc<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -316,7 +316,7 @@ impl<T: CanonicalSerialize + ToOwned> CanonicalSerialize for ark_std::sync::Arc<
         self.as_ref().serialize_with_mode(&mut writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         self.as_ref().serialized_size(compress)
     }
@@ -324,12 +324,12 @@ impl<T: CanonicalSerialize + ToOwned> CanonicalSerialize for ark_std::sync::Arc<
 
 #[cfg(feature = "std")]
 impl<T: Valid + Sync + Send> Valid for ark_std::sync::Arc<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         self.as_ref().check()
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
 
     fn batch_check<'a>(
         batch: impl Iterator<Item = &'a Self> + Send,
@@ -345,7 +345,7 @@ impl<T: Valid + Sync + Send> Valid for ark_std::sync::Arc<T> {
 impl<T: CanonicalDeserialize + ToOwned + Sync + Send> CanonicalDeserialize
     for ark_std::sync::Arc<T>
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         reader: R,
         compress: Compress,
@@ -358,7 +358,7 @@ impl<T: CanonicalDeserialize + ToOwned + Sync + Send> CanonicalDeserialize
 }
 
 impl<'a, T: CanonicalSerialize + ToOwned> CanonicalSerialize for Cow<'a, T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -367,7 +367,7 @@ impl<'a, T: CanonicalSerialize + ToOwned> CanonicalSerialize for Cow<'a, T> {
         self.as_ref().serialize_with_mode(&mut writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         self.as_ref().serialized_size(compress)
     }
@@ -378,12 +378,12 @@ where
     T: ToOwned + Sync + Valid + Send,
     <T as ToOwned>::Owned: CanonicalDeserialize + Send,
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         <<T as ToOwned>::Owned>::check(&self.as_ref().to_owned())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
 
     fn batch_check<'a>(
         batch: impl Iterator<Item = &'a Self> + Send,
@@ -401,7 +401,7 @@ where
     T: ToOwned + Valid + Valid + Sync + Send,
     <T as ToOwned>::Owned: CanonicalDeserialize + Valid + Send,
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         reader: R,
         compress: Compress,
@@ -414,7 +414,7 @@ where
 }
 
 impl<T: CanonicalSerialize, const N: usize> CanonicalSerialize for [T; N] {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -426,7 +426,7 @@ impl<T: CanonicalSerialize, const N: usize> CanonicalSerialize for [T; N] {
         Ok(())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         self.iter()
             .map(|item| item.serialized_size(compress))
@@ -434,12 +434,12 @@ impl<T: CanonicalSerialize, const N: usize> CanonicalSerialize for [T; N] {
     }
 }
 impl<T: CanonicalDeserialize, const N: usize> Valid for [T; N] {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         T::batch_check(self.iter())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn batch_check<'a>(
         batch: impl Iterator<Item = &'a Self> + Send,
     ) -> Result<(), SerializationError>
@@ -451,7 +451,7 @@ impl<T: CanonicalDeserialize, const N: usize> Valid for [T; N] {
 }
 
 impl<T: CanonicalDeserialize, const N: usize> CanonicalDeserialize for [T; N] {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         mut reader: R,
         compress: Compress,
@@ -468,7 +468,7 @@ impl<T: CanonicalDeserialize, const N: usize> CanonicalDeserialize for [T; N] {
 }
 
 impl<T: CanonicalSerialize> CanonicalSerialize for Vec<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -477,19 +477,19 @@ impl<T: CanonicalSerialize> CanonicalSerialize for Vec<T> {
         self.as_slice().serialize_with_mode(&mut writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         self.as_slice().serialized_size(compress)
     }
 }
 
 impl<T: Valid> Valid for Vec<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         T::batch_check(self.iter())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn batch_check<'a>(
         batch: impl Iterator<Item = &'a Self> + Send,
     ) -> Result<(), SerializationError>
@@ -501,7 +501,7 @@ impl<T: Valid> Valid for Vec<T> {
 }
 
 impl<T: CanonicalDeserialize> CanonicalDeserialize for Vec<T> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         mut reader: R,
         compress: Compress,
@@ -525,7 +525,7 @@ impl<T: CanonicalDeserialize> CanonicalDeserialize for Vec<T> {
 }
 
 impl<T: CanonicalSerialize> CanonicalSerialize for [T] {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -539,7 +539,7 @@ impl<T: CanonicalSerialize> CanonicalSerialize for [T] {
         Ok(())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         8 + self
             .iter()
@@ -549,7 +549,7 @@ impl<T: CanonicalSerialize> CanonicalSerialize for [T] {
 }
 
 impl<'a, T: CanonicalSerialize> CanonicalSerialize for &'a [T] {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -558,14 +558,14 @@ impl<'a, T: CanonicalSerialize> CanonicalSerialize for &'a [T] {
         (*self).serialize_with_mode(&mut writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         (*self).serialized_size(compress)
     }
 }
 
 impl CanonicalSerialize for String {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         mut writer: W,
@@ -574,21 +574,21 @@ impl CanonicalSerialize for String {
         self.as_bytes().serialize_with_mode(&mut writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         self.as_bytes().serialized_size(compress)
     }
 }
 
 impl Valid for String {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         Ok(())
     }
 }
 
 impl CanonicalDeserialize for String {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         reader: R,
         compress: Compress,
@@ -605,7 +605,7 @@ macro_rules! impl_tuple {
         impl<$($ty, )*> Valid for ($($ty,)*) where
             $($ty: Valid,)*
         {
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn check(&self) -> Result<(), SerializationError> {
                 $(self.$no.check()?;)*
                 Ok(())
@@ -616,13 +616,13 @@ macro_rules! impl_tuple {
         impl<$($ty, )*> CanonicalSerialize for ($($ty,)*) where
             $($ty: CanonicalSerialize,)*
         {
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn serialize_with_mode<W: Write>(&self, mut writer: W, compress: Compress) -> Result<(), SerializationError> {
                 $(self.$no.serialize_with_mode(&mut writer, compress)?;)*
                 Ok(())
             }
 
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             fn serialized_size(&self, compress: Compress) -> usize {
                 [$(
                     self.$no.serialized_size(compress),
@@ -633,7 +633,7 @@ macro_rules! impl_tuple {
         impl<$($ty, )*> CanonicalDeserialize for ($($ty,)*) where
             $($ty: CanonicalDeserialize,)*
         {
-            #[inline]
+            #[cfg_attr(not(feature = "bin-opt"), inline)]
             #[allow(unused)]
             fn deserialize_with_mode<R: Read>(mut reader: R, compress: Compress, validate: Validate) -> Result<Self, SerializationError> {
                 Ok(($(
@@ -679,13 +679,13 @@ where
 }
 
 impl<K: Valid, V: Valid> Valid for BTreeMap<K, V> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         K::batch_check(self.keys())?;
         V::batch_check(self.values())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn batch_check<'a>(batch: impl Iterator<Item = &'a Self>) -> Result<(), SerializationError>
     where
         Self: 'a,
@@ -743,12 +743,12 @@ impl<V: CanonicalSerialize> CanonicalSerialize for BTreeSet<V> {
 }
 
 impl<V: Valid> Valid for BTreeSet<V> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn check(&self) -> Result<(), SerializationError> {
         V::batch_check(self.iter())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn batch_check<'a>(
         batch: impl Iterator<Item = &'a Self> + Send,
     ) -> Result<(), SerializationError>

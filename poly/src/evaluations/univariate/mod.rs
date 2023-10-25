@@ -59,7 +59,7 @@ impl<'a, 'b, F: FftField, D: EvaluationDomain<F>> Mul<&'a Evaluations<F, D>>
 {
     type Output = Evaluations<F, D>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(self, other: &'a Evaluations<F, D>) -> Evaluations<F, D> {
         let mut result = self.clone();
         result *= other;
@@ -70,7 +70,7 @@ impl<'a, 'b, F: FftField, D: EvaluationDomain<F>> Mul<&'a Evaluations<F, D>>
 impl<'a, F: FftField, D: EvaluationDomain<F>> MulAssign<&'a Evaluations<F, D>>
     for Evaluations<F, D>
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul_assign(&mut self, other: &'a Evaluations<F, D>) {
         assert_eq!(self.domain, other.domain, "domains are unequal");
         ark_std::cfg_iter_mut!(self.evals)
@@ -82,7 +82,7 @@ impl<'a, F: FftField, D: EvaluationDomain<F>> MulAssign<&'a Evaluations<F, D>>
 impl<'a, F: FftField, D: EvaluationDomain<F>> Mul<F> for &'a Evaluations<F, D> {
     type Output = Evaluations<F, D>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(self, elem: F) -> Evaluations<F, D> {
         let mut result = self.clone();
         ark_std::cfg_iter_mut!(result.evals).for_each(|e| {
@@ -97,7 +97,7 @@ impl<'a, 'b, F: FftField, D: EvaluationDomain<F>> Add<&'a Evaluations<F, D>>
 {
     type Output = Evaluations<F, D>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(self, other: &'a Evaluations<F, D>) -> Evaluations<F, D> {
         let mut result = self.clone();
         result += other;
@@ -108,7 +108,7 @@ impl<'a, 'b, F: FftField, D: EvaluationDomain<F>> Add<&'a Evaluations<F, D>>
 impl<'a, F: FftField, D: EvaluationDomain<F>> AddAssign<&'a Evaluations<F, D>>
     for Evaluations<F, D>
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add_assign(&mut self, other: &'a Evaluations<F, D>) {
         assert_eq!(self.domain, other.domain, "domains are unequal");
         ark_std::cfg_iter_mut!(self.evals)
@@ -122,7 +122,7 @@ impl<'a, 'b, F: FftField, D: EvaluationDomain<F>> Sub<&'a Evaluations<F, D>>
 {
     type Output = Evaluations<F, D>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(self, other: &'a Evaluations<F, D>) -> Evaluations<F, D> {
         let mut result = self.clone();
         result -= other;
@@ -133,7 +133,7 @@ impl<'a, 'b, F: FftField, D: EvaluationDomain<F>> Sub<&'a Evaluations<F, D>>
 impl<'a, F: FftField, D: EvaluationDomain<F>> SubAssign<&'a Evaluations<F, D>>
     for Evaluations<F, D>
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub_assign(&mut self, other: &'a Evaluations<F, D>) {
         assert_eq!(self.domain, other.domain, "domains are unequal");
         ark_std::cfg_iter_mut!(self.evals)
@@ -147,7 +147,7 @@ impl<'a, 'b, F: FftField, D: EvaluationDomain<F>> Div<&'a Evaluations<F, D>>
 {
     type Output = Evaluations<F, D>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div(self, other: &'a Evaluations<F, D>) -> Evaluations<F, D> {
         let mut result = self.clone();
         result /= other;
@@ -158,7 +158,7 @@ impl<'a, 'b, F: FftField, D: EvaluationDomain<F>> Div<&'a Evaluations<F, D>>
 impl<'a, F: FftField, D: EvaluationDomain<F>> DivAssign<&'a Evaluations<F, D>>
     for Evaluations<F, D>
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div_assign(&mut self, other: &'a Evaluations<F, D>) {
         assert_eq!(self.domain, other.domain, "domains are unequal");
         let mut other_copy = other.clone();

@@ -83,7 +83,7 @@ impl<P: TECurveConfig> Hash for Projective<P> {
 
 impl<P: TECurveConfig> Distribution<Projective<P>> for Standard {
     /// Generates a uniformly random instance of the curve.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Projective<P> {
         loop {
             let y = P::BaseField::rand(rng);
@@ -97,7 +97,7 @@ impl<P: TECurveConfig> Distribution<Projective<P>> for Standard {
 }
 
 impl<P: TECurveConfig> Default for Projective<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn default() -> Self {
         Self::zero()
     }
@@ -191,7 +191,7 @@ impl<P: TECurveConfig> Group for Projective<P> {
         self
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul_bigint(&self, other: impl AsRef<[u64]>) -> Self {
         P::mul_projective(self, other.as_ref())
     }
@@ -372,7 +372,7 @@ impl<P: TECurveConfig, T: Borrow<P::ScalarField>> MulAssign<T> for Projective<P>
 impl<P: TECurveConfig, T: Borrow<P::ScalarField>> Mul<T> for Projective<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(mut self, other: T) -> Self {
         self *= other;
         self
@@ -424,7 +424,7 @@ impl<P: MontCurveConfig> MontgomeryAffine<P> {
 
 impl<P: TECurveConfig> CanonicalSerialize for Projective<P> {
     #[allow(unused_qualifications)]
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         writer: W,
@@ -434,7 +434,7 @@ impl<P: TECurveConfig> CanonicalSerialize for Projective<P> {
         P::serialize_with_mode(&aff, writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         P::serialized_size(compress)
     }
@@ -473,7 +473,7 @@ impl<M: TECurveConfig, ConstraintF: Field> ToConstraintField<ConstraintF> for Pr
 where
     M::BaseField: ToConstraintField<ConstraintF>,
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
         Affine::from(*self).to_field_elements()
     }

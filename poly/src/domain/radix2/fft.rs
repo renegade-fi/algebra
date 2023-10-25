@@ -186,7 +186,7 @@ impl<F: FftField> Radix2EvaluationDomain<F> {
             });
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn butterfly_fn_io<T: DomainCoeff<F>>(((lo, hi), root): ((&mut T, &mut T), &F)) {
         let mut neg = *lo;
         neg -= *hi;
@@ -197,7 +197,7 @@ impl<F: FftField> Radix2EvaluationDomain<F> {
         *hi *= *root;
     }
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn butterfly_fn_oi<T: DomainCoeff<F>>(((lo, hi), root): ((&mut T, &mut T), &F)) {
         *hi *= *root;
 
@@ -351,7 +351,7 @@ const MIN_GAP_SIZE_FOR_PARALLELISATION: usize = 1 << 10;
 #[cfg(feature = "parallel")]
 const LOG_ROOTS_OF_UNITY_PARALLEL_SIZE: u32 = 7;
 
-#[inline]
+#[cfg_attr(not(feature = "bin-opt"), inline)]
 fn bitrev(a: u64, log_len: u32) -> u64 {
     a.reverse_bits().wrapping_shr(64 - log_len)
 }

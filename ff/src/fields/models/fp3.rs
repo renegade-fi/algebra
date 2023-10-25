@@ -23,7 +23,7 @@ pub trait Fp3Config: 'static + Send + Sync + Sized {
     /// Return `fe * Self::NONRESIDUE`.
     /// The default implementation can be specialized if [`Self::NONRESIDUE`] has a special
     /// structure that can speed up multiplication
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_fp_by_nonresidue_in_place(fe: &mut Self::Fp) -> &mut Self::Fp {
         *fe *= Self::NONRESIDUE;
         fe
@@ -52,7 +52,7 @@ impl<P: Fp3Config> CubicExtConfig for Fp3ConfigWrapper<P> {
     const FROBENIUS_COEFF_C1: &'static [Self::FrobCoeff] = P::FROBENIUS_COEFF_FP3_C1;
     const FROBENIUS_COEFF_C2: &'static [Self::FrobCoeff] = P::FROBENIUS_COEFF_FP3_C2;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_in_place(fe: &mut Self::BaseField) -> &mut Self::BaseField {
         P::mul_fp_by_nonresidue_in_place(fe)
     }

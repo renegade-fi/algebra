@@ -252,7 +252,7 @@ impl<P: TECurveConfig, T: Borrow<Self>> Sub<T> for Affine<P> {
 }
 
 impl<P: TECurveConfig> Default for Affine<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn default() -> Self {
         Self::zero()
     }
@@ -260,7 +260,7 @@ impl<P: TECurveConfig> Default for Affine<P> {
 
 impl<P: TECurveConfig> Distribution<Affine<P>> for Standard {
     /// Generates a uniformly random instance of the curve.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Affine<P> {
         loop {
             let y = P::BaseField::rand(rng);
@@ -276,7 +276,7 @@ impl<P: TECurveConfig> Distribution<Affine<P>> for Standard {
 impl<P: TECurveConfig, T: Borrow<P::ScalarField>> Mul<T> for Affine<P> {
     type Output = Projective<P>;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(self, other: T) -> Self::Output {
         self.mul_bigint(other.borrow().into_bigint())
     }
@@ -301,7 +301,7 @@ impl<P: TECurveConfig> From<Projective<P>> for Affine<P> {
     }
 }
 impl<P: TECurveConfig> CanonicalSerialize for Affine<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         writer: W,
@@ -310,7 +310,7 @@ impl<P: TECurveConfig> CanonicalSerialize for Affine<P> {
         P::serialize_with_mode(self, writer, compress)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, compress: Compress) -> usize {
         P::serialized_size(compress)
     }
@@ -340,7 +340,7 @@ impl<M: TECurveConfig, ConstraintF: Field> ToConstraintField<ConstraintF> for Af
 where
     M::BaseField: ToConstraintField<ConstraintF>,
 {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_field_elements(&self) -> Option<Vec<ConstraintF>> {
         let mut x_fe = self.x.to_field_elements()?;
         let y_fe = self.y.to_field_elements()?;

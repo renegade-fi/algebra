@@ -94,7 +94,7 @@ pub trait MontConfig<const N: usize>: 'static + Sync + Send + Sized {
     };
 
     /// Sets `a = a + b`.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn add_assign(a: &mut Fp<MontBackend<Self, N>, N>, b: &Fp<MontBackend<Self, N>, N>) {
         // This cannot exceed the backing capacity.
         let c = a.0.add_with_carry(&b.0);
@@ -107,7 +107,7 @@ pub trait MontConfig<const N: usize>: 'static + Sync + Send + Sized {
     }
 
     /// Sets `a = a - b`.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn sub_assign(a: &mut Fp<MontBackend<Self, N>, N>, b: &Fp<MontBackend<Self, N>, N>) {
         // If `other` is larger than `self`, add the modulus to self first.
         if b.0 > a.0 {
@@ -117,7 +117,7 @@ pub trait MontConfig<const N: usize>: 'static + Sync + Send + Sized {
     }
 
     /// Sets `a = 2 * a`.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn double_in_place(a: &mut Fp<MontBackend<Self, N>, N>) {
         // This cannot exceed the backing capacity.
         let c = a.0.mul2();
@@ -130,7 +130,7 @@ pub trait MontConfig<const N: usize>: 'static + Sync + Send + Sized {
     }
 
     /// Sets `a = -a`.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn neg_in_place(a: &mut Fp<MontBackend<Self, N>, N>) {
         if !a.is_zero() {
             let mut tmp = Self::MODULUS;
@@ -145,8 +145,7 @@ pub trait MontConfig<const N: usize>: 'static + Sync + Send + Sized {
     /// [here](https://hackmd.io/@gnark/modular_multiplication) if
     /// `Self::MODULUS` has (a) a non-zero MSB, and (b) at least one
     /// zero bit in the rest of the modulus.
-    #[unroll_for_loops(12)]
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), unroll_for_loops(12), inline(always))]
     fn mul_assign(a: &mut Fp<MontBackend<Self, N>, N>, b: &Fp<MontBackend<Self, N>, N>) {
         // No-carry optimisation applied to CIOS
         if Self::CAN_USE_NO_CARRY_MUL_OPT {
@@ -214,8 +213,7 @@ pub trait MontConfig<const N: usize>: 'static + Sync + Send + Sized {
         }
     }
 
-    #[inline(always)]
-    #[unroll_for_loops(12)]
+    #[cfg_attr(not(feature = "bin-opt"), unroll_for_loops(12), inline(always))]
     fn square_in_place(a: &mut Fp<MontBackend<Self, N>, N>) {
         if N == 1 {
             // We default to multiplying with `a` using the `Mul` impl
@@ -366,8 +364,7 @@ pub trait MontConfig<const N: usize>: 'static + Sync + Send + Sized {
         }
     }
 
-    #[inline]
-    #[unroll_for_loops(12)]
+    #[cfg_attr(not(feature = "bin-opt"), inline, unroll_for_loops(12))]
     #[allow(clippy::modulo_one)]
     fn into_bigint(a: Fp<MontBackend<Self, N>, N>) -> BigInt<N> {
         let mut tmp = a.0;
@@ -514,7 +511,7 @@ pub const fn inv<T: MontConfig<N>, const N: usize>() -> u64 {
     inv.wrapping_neg()
 }
 
-#[inline]
+#[cfg_attr(not(feature = "bin-opt"), inline)]
 pub const fn can_use_no_carry_mul_optimization<T: MontConfig<N>, const N: usize>() -> bool {
     // Checking the modulus at compile time
     let top_bit_is_zero = T::MODULUS.0[N - 1] >> 63 == 0;
@@ -525,12 +522,12 @@ pub const fn can_use_no_carry_mul_optimization<T: MontConfig<N>, const N: usize>
     top_bit_is_zero && !all_remaining_bits_are_one
 }
 
-#[inline]
+#[cfg_attr(not(feature = "bin-opt"), inline)]
 pub const fn modulus_has_spare_bit<T: MontConfig<N>, const N: usize>() -> bool {
     T::MODULUS.0[N - 1] >> 63 == 0
 }
 
-#[inline]
+#[cfg_attr(not(feature = "bin-opt"), inline)]
 pub const fn can_use_no_carry_square_optimization<T: MontConfig<N>, const N: usize>() -> bool {
     // Checking the modulus at compile time
     let top_two_bits_are_zero = T::MODULUS.0[N - 1] >> 62 == 0;
@@ -647,7 +644,7 @@ impl<T: MontConfig<N>, const N: usize> FpConfig<N> for MontBackend<T, N> {
     /// [here](https://hackmd.io/@zkteam/modular_multiplication) if
     /// `P::MODULUS` has (a) a non-zero MSB, and (b) at least one
     /// zero bit in the rest of the modulus.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul_assign(a: &mut Fp<Self, N>, b: &Fp<Self, N>) {
         T::mul_assign(a, b)
     }
@@ -656,7 +653,7 @@ impl<T: MontConfig<N>, const N: usize> FpConfig<N> for MontBackend<T, N> {
         T::sum_of_products(a, b)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     #[allow(unused_braces, clippy::absurd_extreme_comparisons)]
     fn square_in_place(a: &mut Fp<Self, N>) {
         T::square_in_place(a)
@@ -670,7 +667,7 @@ impl<T: MontConfig<N>, const N: usize> FpConfig<N> for MontBackend<T, N> {
         T::from_bigint(r)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     #[allow(clippy::modulo_one)]
     fn into_bigint(a: Fp<Self, N>) -> BigInt<N> {
         T::into_bigint(a)
@@ -687,7 +684,7 @@ impl<T: MontConfig<N>, const N: usize> Fp<MontBackend<T, N>, N> {
 
     /// Construct a new field element from its underlying
     /// [`struct@BigInt`] data type.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub const fn new(element: BigInt<N>) -> Self {
         let mut r = Self(element, PhantomData);
         if r.const_is_zero() {
@@ -705,7 +702,7 @@ impl<T: MontConfig<N>, const N: usize> Fp<MontBackend<T, N>, N> {
     /// Thus, this method should be used only when constructing
     /// an element from an integer that has already been put in
     /// Montgomery form.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub const fn new_unchecked(element: BigInt<N>) -> Self {
         Self(element, PhantomData)
     }
@@ -798,7 +795,7 @@ impl<T: MontConfig<N>, const N: usize> Fp<MontBackend<T, N>, N> {
         false
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     const fn const_subtract_modulus(mut self) -> Self {
         if !self.const_is_valid() {
             self.0 = Self::sub_with_borrow(&self.0, &T::MODULUS);
@@ -806,7 +803,7 @@ impl<T: MontConfig<N>, const N: usize> Fp<MontBackend<T, N>, N> {
         self
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     const fn const_subtract_modulus_with_carry(mut self, carry: bool) -> Self {
         if carry || !self.const_is_valid() {
             self.0 = Self::sub_with_borrow(&self.0, &T::MODULUS);

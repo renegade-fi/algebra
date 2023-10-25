@@ -38,7 +38,7 @@ pub trait TECurveConfig: super::CurveConfig {
     /// The default implementation should be overridden only if
     /// the product can be computed faster than standard field multiplication
     /// (eg: via doubling if `COEFF_A == 2`, or if `COEFF_A.is_zero()`).
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_by_a(elem: Self::BaseField) -> Self::BaseField {
         elem * Self::COEFF_A
     }
@@ -97,7 +97,7 @@ pub trait TECurveConfig: super::CurveConfig {
 
     /// If uncompressed, serializes both x and y coordinates.
     /// If compressed, serializes y coordinate with a bit to encode whether x is positive.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         item: &Affine<Self>,
         mut writer: W,
@@ -148,7 +148,7 @@ pub trait TECurveConfig: super::CurveConfig {
         Ok(point)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(compress: Compress) -> usize {
         let zero = Self::BaseField::zero();
         match compress {

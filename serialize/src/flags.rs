@@ -46,12 +46,12 @@ pub struct EmptyFlags;
 impl Flags for EmptyFlags {
     const BIT_SIZE: usize = 0;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn u8_bitmask(&self) -> u8 {
         0
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_u8(_: u8) -> Option<Self> {
         Some(EmptyFlags)
     }

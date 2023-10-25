@@ -53,7 +53,7 @@ pub trait CubicExtConfig: 'static + Send + Sync + Sized {
 
     /// A specializable method for multiplying an element of the base field by
     /// the quadratic non-residue. This is used in multiplication and squaring.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_in_place(fe: &mut Self::BaseField) -> &mut Self::BaseField {
         *fe *= &Self::NONRESIDUE;
         fe
@@ -61,7 +61,7 @@ pub trait CubicExtConfig: 'static + Send + Sync + Sized {
 
     /// A defaulted method for multiplying an element of the base field by
     /// the quadratic non-residue. This is used in multiplication and squaring.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue(mut fe: Self::BaseField) -> Self::BaseField {
         Self::mul_base_field_by_nonresidue_in_place(&mut fe);
         fe
@@ -225,7 +225,7 @@ impl<P: CubicExtConfig> Field for CubicExtField<P> {
         self
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_random_bytes_with_flags<F: Flags>(bytes: &[u8]) -> Option<(Self, F)> {
         let split_at = bytes.len() / 3;
         if let Some(c0) = P::BaseField::from_random_bytes(&bytes[..split_at]) {
@@ -240,7 +240,7 @@ impl<P: CubicExtConfig> Field for CubicExtField<P> {
         None
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_random_bytes(bytes: &[u8]) -> Option<Self> {
         Self::from_random_bytes_with_flags::<EmptyFlags>(bytes).map(|f| f.0)
     }
@@ -339,7 +339,7 @@ impl<P: CubicExtConfig> Field for CubicExtField<P> {
 
 /// `CubicExtField` elements are ordered lexicographically.
 impl<P: CubicExtConfig> Ord for CubicExtField<P> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn cmp(&self, other: &Self) -> Ordering {
         let c2_cmp = self.c2.cmp(&other.c2);
         let c1_cmp = self.c1.cmp(&other.c1);
@@ -357,7 +357,7 @@ impl<P: CubicExtConfig> Ord for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> PartialOrd for CubicExtField<P> {
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
@@ -381,7 +381,7 @@ impl<P: CubicExtConfig> From<u128> for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> From<i128> for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i128) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -400,7 +400,7 @@ impl<P: CubicExtConfig> From<u64> for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> From<i64> for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i64) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -419,7 +419,7 @@ impl<P: CubicExtConfig> From<u32> for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> From<i32> for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i32) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -438,7 +438,7 @@ impl<P: CubicExtConfig> From<u16> for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> From<i16> for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i16) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -457,7 +457,7 @@ impl<P: CubicExtConfig> From<u8> for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> From<i8> for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: i8) -> Self {
         let abs = Self::from(val.unsigned_abs());
         if val.is_positive() {
@@ -480,7 +480,7 @@ impl<P: CubicExtConfig> From<bool> for CubicExtField<P> {
 
 impl<P: CubicExtConfig> Neg for CubicExtField<P> {
     type Output = Self;
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn neg(mut self) -> Self {
         self.c0.neg_in_place();
         self.c1.neg_in_place();
@@ -490,7 +490,7 @@ impl<P: CubicExtConfig> Neg for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> Distribution<CubicExtField<P>> for Standard {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> CubicExtField<P> {
         CubicExtField::new(
             UniformRand::rand(rng),
@@ -503,7 +503,7 @@ impl<P: CubicExtConfig> Distribution<CubicExtField<P>> for Standard {
 impl<'a, P: CubicExtConfig> Add<&'a CubicExtField<P>> for CubicExtField<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add(mut self, other: &Self) -> Self {
         self.add_assign(other);
         self
@@ -513,7 +513,7 @@ impl<'a, P: CubicExtConfig> Add<&'a CubicExtField<P>> for CubicExtField<P> {
 impl<'a, P: CubicExtConfig> Sub<&'a CubicExtField<P>> for CubicExtField<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub(mut self, other: &Self) -> Self {
         self.sub_assign(other);
         self
@@ -523,7 +523,7 @@ impl<'a, P: CubicExtConfig> Sub<&'a CubicExtField<P>> for CubicExtField<P> {
 impl<'a, P: CubicExtConfig> Mul<&'a CubicExtField<P>> for CubicExtField<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn mul(mut self, other: &Self) -> Self {
         self.mul_assign(other);
         self
@@ -533,7 +533,7 @@ impl<'a, P: CubicExtConfig> Mul<&'a CubicExtField<P>> for CubicExtField<P> {
 impl<'a, P: CubicExtConfig> Div<&'a CubicExtField<P>> for CubicExtField<P> {
     type Output = Self;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div(mut self, other: &Self) -> Self {
         self.mul_assign(&other.inverse().unwrap());
         self
@@ -543,7 +543,7 @@ impl<'a, P: CubicExtConfig> Div<&'a CubicExtField<P>> for CubicExtField<P> {
 impl_additive_ops_from_ref!(CubicExtField, CubicExtConfig);
 impl_multiplicative_ops_from_ref!(CubicExtField, CubicExtConfig);
 impl<'a, P: CubicExtConfig> AddAssign<&'a Self> for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add_assign(&mut self, other: &Self) {
         self.c0.add_assign(&other.c0);
         self.c1.add_assign(&other.c1);
@@ -552,7 +552,7 @@ impl<'a, P: CubicExtConfig> AddAssign<&'a Self> for CubicExtField<P> {
 }
 
 impl<'a, P: CubicExtConfig> SubAssign<&'a Self> for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub_assign(&mut self, other: &Self) {
         self.c0.sub_assign(&other.c0);
         self.c1.sub_assign(&other.c1);
@@ -561,7 +561,7 @@ impl<'a, P: CubicExtConfig> SubAssign<&'a Self> for CubicExtField<P> {
 }
 
 impl<'a, P: CubicExtConfig> MulAssign<&'a Self> for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     #[allow(clippy::many_single_char_names)]
     fn mul_assign(&mut self, other: &Self) {
         // Devegili OhEig Scott Dahab --- Multiplication and Squaring on
@@ -591,7 +591,7 @@ impl<'a, P: CubicExtConfig> MulAssign<&'a Self> for CubicExtField<P> {
 }
 
 impl<'a, P: CubicExtConfig> DivAssign<&'a Self> for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div_assign(&mut self, other: &Self) {
         self.mul_assign(&other.inverse().unwrap());
     }
@@ -604,7 +604,7 @@ impl<P: CubicExtConfig> fmt::Display for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> CanonicalSerializeWithFlags for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_flags<W: Write, F: Flags>(
         &self,
         mut writer: W,
@@ -616,7 +616,7 @@ impl<P: CubicExtConfig> CanonicalSerializeWithFlags for CubicExtField<P> {
         Ok(())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size_with_flags<F: Flags>(&self) -> usize {
         self.c0.compressed_size()
             + self.c1.compressed_size()
@@ -625,7 +625,7 @@ impl<P: CubicExtConfig> CanonicalSerializeWithFlags for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> CanonicalSerialize for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialize_with_mode<W: Write>(
         &self,
         writer: W,
@@ -634,14 +634,14 @@ impl<P: CubicExtConfig> CanonicalSerialize for CubicExtField<P> {
         self.serialize_with_flags(writer, EmptyFlags)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn serialized_size(&self, _compress: Compress) -> usize {
         self.serialized_size_with_flags::<EmptyFlags>()
     }
 }
 
 impl<P: CubicExtConfig> CanonicalDeserializeWithFlags for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_flags<R: Read, F: Flags>(
         mut reader: R,
     ) -> Result<(Self, F), SerializationError> {
@@ -661,7 +661,7 @@ impl<P: CubicExtConfig> Valid for CubicExtField<P> {
 }
 
 impl<P: CubicExtConfig> CanonicalDeserialize for CubicExtField<P> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn deserialize_with_mode<R: Read>(
         mut reader: R,
         compress: Compress,

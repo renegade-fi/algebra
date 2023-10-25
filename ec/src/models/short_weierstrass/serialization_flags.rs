@@ -14,12 +14,12 @@ pub enum SWFlags {
 }
 
 impl SWFlags {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub fn infinity() -> Self {
         SWFlags::PointAtInfinity
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub fn from_y_coordinate(y: impl Field) -> Self {
         if y <= -y {
             Self::YIsPositive
@@ -28,12 +28,12 @@ impl SWFlags {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub fn is_infinity(&self) -> bool {
         matches!(self, SWFlags::PointAtInfinity)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub fn is_positive(&self) -> Option<bool> {
         match self {
             SWFlags::PointAtInfinity => None,
@@ -44,7 +44,7 @@ impl SWFlags {
 }
 
 impl Default for SWFlags {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn default() -> Self {
         // YIsNegative doesn't change the serialization
         SWFlags::YIsNegative
@@ -54,7 +54,7 @@ impl Default for SWFlags {
 impl Flags for SWFlags {
     const BIT_SIZE: usize = 2;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn u8_bitmask(&self) -> u8 {
         let mut mask = 0;
         match self {
@@ -65,7 +65,7 @@ impl Flags for SWFlags {
         mask
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_u8(value: u8) -> Option<Self> {
         let is_negative = (value >> 7) & 1 == 1;
         let is_infinity = (value >> 6) & 1 == 1;

@@ -23,7 +23,7 @@ pub trait Fp12Config: 'static + Send + Sync + Copy {
     const FROBENIUS_COEFF_FP12_C1: &'static [Fp2<Fp2Config<Self>>];
 
     /// Multiply by quadratic nonresidue v.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_fp6_by_nonresidue_in_place(fe: &mut Fp6<Self::Fp6Config>) -> &mut Fp6<Self::Fp6Config> {
         // see [[DESD06, Section 6.1]](https://eprint.iacr.org/2006/471.pdf).
         let old_c1 = fe.c1;
@@ -48,7 +48,7 @@ impl<P: Fp12Config> QuadExtConfig for Fp12ConfigWrapper<P> {
 
     const FROBENIUS_COEFF_C1: &'static [Self::FrobCoeff] = P::FROBENIUS_COEFF_FP12_C1;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_in_place(fe: &mut Self::BaseField) -> &mut Self::BaseField {
         P::mul_fp6_by_nonresidue_in_place(fe)
     }

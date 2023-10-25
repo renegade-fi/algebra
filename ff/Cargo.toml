@@ -1,14 +1,22 @@
 [package]
 name = "ark-ff"
 version = "0.4.2"
-authors = [ "arkworks contributors" ]
+authors = ["arkworks contributors"]
 description = "A library for finite fields"
 homepage = "https://arkworks.rs"
 repository = "https://github.com/arkworks-rs/algebra"
 documentation = "https://docs.rs/ark-ff/"
-keywords = ["cryptography", "finite-fields" ]
+keywords = ["cryptography", "finite-fields"]
 categories = ["cryptography"]
-include = ["Cargo.toml", "build.rs", "src", "doc", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+include = [
+    "Cargo.toml",
+    "build.rs",
+    "src",
+    "doc",
+    "README.md",
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+]
 license = "MIT/Apache-2.0"
 edition = "2021"
 rust-version = "1.63"
@@ -22,13 +30,19 @@ derivative = { version = "2", features = ["use_core"] }
 num-traits = { version = "0.2", default-features = false }
 paste = "1.0"
 rayon = { version = "1", optional = true }
-zeroize = { version = "1", default-features = false, features = ["zeroize_derive"] }
+zeroize = { version = "1", default-features = false, features = [
+    "zeroize_derive",
+] }
 num-bigint = { version = "0.4", default-features = false }
 digest = { version = "0.10", default-features = false, features = ["alloc"] }
 itertools = { version = "0.10", default-features = false }
 
 [dev-dependencies]
-ark-test-curves = { version = "0.4.2-alpha.1", path = "../test-curves", default-features = false, features = [ "bls12_381_curve", "mnt6_753", "secp256k1"] }
+ark-test-curves = { version = "0.4.2-alpha.1", path = "../test-curves", default-features = false, features = [
+    "bls12_381_curve",
+    "mnt6_753",
+    "secp256k1",
+] }
 blake2 = { version = "0.10", default-features = false }
 sha3 = { version = "0.10", default-features = false }
 sha2 = { version = "0.10", default-features = false }
@@ -43,9 +57,10 @@ rustc_version = "0.4"
 
 [features]
 default = []
-std = [ "ark-std/std", "ark-serialize/std", "itertools/use_std" ]
-parallel = [ "std", "rayon", "ark-std/parallel" ]
+std = ["ark-std/std", "ark-serialize/std", "itertools/use_std"]
+parallel = ["std", "rayon", "ark-std/parallel"]
 asm = []
+bin-opt = []
 
 
 [package.metadata.docs.rs]

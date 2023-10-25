@@ -89,7 +89,7 @@ pub trait EvaluationDomain<F: FftField>:
     fn coset_offset_pow_size(&self) -> F;
 
     /// Compute a FFT.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn fft<T: DomainCoeff<F>>(&self, coeffs: &[T]) -> Vec<T> {
         let mut coeffs = coeffs.to_vec();
         self.fft_in_place(&mut coeffs);
@@ -100,7 +100,7 @@ pub trait EvaluationDomain<F: FftField>:
     fn fft_in_place<T: DomainCoeff<F>>(&self, coeffs: &mut Vec<T>);
 
     /// Compute a IFFT.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn ifft<T: DomainCoeff<F>>(&self, evals: &[T]) -> Vec<T> {
         let mut evals = evals.to_vec();
         self.ifft_in_place(&mut evals);

@@ -175,13 +175,13 @@ pub trait CanonicalDeserializeWithFlags: Sized {
 struct HashMarshaller<'a, H: Digest>(&'a mut H);
 
 impl<'a, H: Digest> ark_std::io::Write for HashMarshaller<'a, H> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn write(&mut self, buf: &[u8]) -> ark_std::io::Result<usize> {
         Digest::update(self.0, buf);
         Ok(buf.len())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn flush(&mut self) -> ark_std::io::Result<()> {
         Ok(())
     }
@@ -209,7 +209,7 @@ pub trait CanonicalSerializeHashExt: CanonicalSerialize {
 /// CanonicalSerialize
 impl<T: CanonicalSerialize> CanonicalSerializeHashExt for T {}
 
-#[inline]
+#[cfg_attr(not(feature = "bin-opt"), inline)]
 pub fn buffer_bit_byte_size(modulus_bits: usize) -> (usize, usize) {
     let byte_size = buffer_byte_size(modulus_bits);
     ((byte_size * 8), byte_size)
@@ -217,7 +217,7 @@ pub fn buffer_bit_byte_size(modulus_bits: usize) -> (usize, usize) {
 
 /// Converts the number of bits required to represent a number
 /// into the number of bytes required to represent it.
-#[inline]
+#[cfg_attr(not(feature = "bin-opt"), inline)]
 pub const fn buffer_byte_size(modulus_bits: usize) -> usize {
     (modulus_bits + 7) / 8
 }
@@ -238,7 +238,7 @@ mod test {
     struct Dummy;
 
     impl CanonicalSerialize for Dummy {
-        #[inline]
+        #[cfg_attr(not(feature = "bin-opt"), inline)]
         fn serialize_with_mode<W: Write>(
             &self,
             mut writer: W,
@@ -264,7 +264,7 @@ mod test {
         }
     }
     impl CanonicalDeserialize for Dummy {
-        #[inline]
+        #[cfg_attr(not(feature = "bin-opt"), inline)]
         fn deserialize_with_mode<R: Read>(
             reader: R,
             compress: Compress,

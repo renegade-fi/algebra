@@ -228,7 +228,7 @@ impl<const N: usize> BigInt<N> {
         ((N - 1) * 64) as u32 + (64 - self.0[N - 1].leading_zeros())
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub(crate) const fn const_sub_with_borrow(mut self, other: &Self) -> (Self, bool) {
         let mut borrow = 0;
 
@@ -239,7 +239,7 @@ impl<const N: usize> BigInt<N> {
         (self, borrow != 0)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     pub(crate) const fn const_add_with_carry(mut self, other: &Self) -> (Self, bool) {
         let mut carry = 0;
 
@@ -289,7 +289,7 @@ impl<const N: usize> BigInt<N> {
 impl<const N: usize> BigInteger for BigInt<N> {
     const NUM_LIMBS: usize = N;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn add_with_carry(&mut self, other: &Self) -> bool {
         {
             use arithmetic::adc_for_add_with_carry as adc;
@@ -323,7 +323,7 @@ impl<const N: usize> BigInteger for BigInt<N> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sub_with_borrow(&mut self, other: &Self) -> bool {
         use arithmetic::sbb_for_sub_with_borrow as sbb;
 
@@ -355,7 +355,7 @@ impl<const N: usize> BigInteger for BigInt<N> {
         borrow != 0
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     #[allow(unused)]
     fn mul2(&mut self) -> bool {
         #[cfg(all(target_arch = "x86_64", feature = "asm"))]
@@ -387,7 +387,7 @@ impl<const N: usize> BigInteger for BigInt<N> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn muln(&mut self, mut n: u32) {
         if n >= (64 * N) as u32 {
             *self = Self::from(0u64);
@@ -415,7 +415,7 @@ impl<const N: usize> BigInteger for BigInt<N> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn div2(&mut self) {
         let mut t = 0;
         for i in 0..N {
@@ -427,7 +427,7 @@ impl<const N: usize> BigInteger for BigInt<N> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn divn(&mut self, mut n: u32) {
         if n >= (64 * N) as u32 {
             *self = Self::from(0u64);
@@ -455,22 +455,22 @@ impl<const N: usize> BigInteger for BigInt<N> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn is_odd(&self) -> bool {
         self.0[0] & 1 == 1
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn is_even(&self) -> bool {
         !self.is_odd()
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn is_zero(&self) -> bool {
         self.0.iter().all(|&e| e == 0)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn num_bits(&self) -> u32 {
         let mut ret = N as u32 * 64;
         for i in self.0.iter().rev() {
@@ -484,7 +484,7 @@ impl<const N: usize> BigInteger for BigInt<N> {
         ret
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn get_bit(&self, i: usize) -> bool {
         if i >= 64 * N {
             false
@@ -495,7 +495,7 @@ impl<const N: usize> BigInteger for BigInt<N> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from_bits_be(bits: &[bool]) -> Self {
         let mut res = Self::default();
         let mut acc: u64 = 0;
@@ -523,14 +523,14 @@ impl<const N: usize> BigInteger for BigInt<N> {
         res
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_bytes_be(&self) -> Vec<u8> {
         let mut le_bytes = self.to_bytes_le();
         le_bytes.reverse();
         le_bytes
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn to_bytes_le(&self) -> Vec<u8> {
         let array_map = self.0.iter().map(|limb| limb.to_le_bytes());
         let mut res = Vec::with_capacity(N * 8);
@@ -554,7 +554,7 @@ impl<const N: usize> Display for BigInt<N> {
 }
 
 impl<const N: usize> Ord for BigInt<N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     #[cfg_attr(target_arch = "x86_64", unroll_for_loops(12))]
     fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         use core::cmp::Ordering;
@@ -580,7 +580,7 @@ impl<const N: usize> Ord for BigInt<N> {
 }
 
 impl<const N: usize> PartialOrd for BigInt<N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
         Some(self.cmp(other))
     }
@@ -597,21 +597,21 @@ impl<const N: usize> Distribution<BigInt<N>> for Standard {
 }
 
 impl<const N: usize> AsMut<[u64]> for BigInt<N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn as_mut(&mut self) -> &mut [u64] {
         &mut self.0
     }
 }
 
 impl<const N: usize> AsRef<[u64]> for BigInt<N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn as_ref(&self) -> &[u64] {
         &self.0
     }
 }
 
 impl<const N: usize> From<u64> for BigInt<N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: u64) -> BigInt<N> {
         let mut repr = Self::default();
         repr.0[0] = val;
@@ -620,7 +620,7 @@ impl<const N: usize> From<u64> for BigInt<N> {
 }
 
 impl<const N: usize> From<u32> for BigInt<N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: u32) -> BigInt<N> {
         let mut repr = Self::default();
         repr.0[0] = u64::from(val);
@@ -629,7 +629,7 @@ impl<const N: usize> From<u32> for BigInt<N> {
 }
 
 impl<const N: usize> From<u16> for BigInt<N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: u16) -> BigInt<N> {
         let mut repr = Self::default();
         repr.0[0] = u64::from(val);
@@ -638,7 +638,7 @@ impl<const N: usize> From<u16> for BigInt<N> {
 }
 
 impl<const N: usize> From<u8> for BigInt<N> {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: u8) -> BigInt<N> {
         let mut repr = Self::default();
         repr.0[0] = u64::from(val);
@@ -650,7 +650,7 @@ impl<const N: usize> TryFrom<BigUint> for BigInt<N> {
     type Error = ();
 
     /// Returns `Err(())` if the bit size of `val` is more than `N * 64`.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn try_from(val: num_bigint::BigUint) -> Result<BigInt<N>, Self::Error> {
         let bytes = val.to_bytes_le();
 
@@ -675,7 +675,7 @@ impl<const N: usize> TryFrom<BigUint> for BigInt<N> {
 }
 
 impl<const N: usize> From<BigInt<N>> for BigUint {
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn from(val: BigInt<N>) -> num_bigint::BigUint {
         BigUint::from_bytes_le(&val.to_bytes_le())
     }

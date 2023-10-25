@@ -19,7 +19,7 @@ pub trait Fp4Config: 'static + Send + Sync {
     /// non_residue^((modulus^i-1)/4) for i=0,1,2,3
     const FROBENIUS_COEFF_FP4_C1: &'static [<Self::Fp2Config as Fp2Config>::Fp];
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_fp2_by_nonresidue_in_place(fe: &mut Fp2<Self::Fp2Config>) -> &mut Fp2<Self::Fp2Config> {
         // see [[DESD06, Section 5.1]](https://eprint.iacr.org/2006/471.pdf).
         let new_c1 = fe.c0;
@@ -43,7 +43,7 @@ impl<P: Fp4Config> QuadExtConfig for Fp4ConfigWrapper<P> {
 
     const FROBENIUS_COEFF_C1: &'static [Self::FrobCoeff] = P::FROBENIUS_COEFF_FP4_C1;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_in_place(fe: &mut Self::BaseField) -> &mut Self::BaseField {
         P::mul_fp2_by_nonresidue_in_place(fe)
     }

@@ -252,7 +252,7 @@ pub trait Field:
     fn inverse_in_place(&mut self) -> Option<&mut Self>;
 
     /// Returns `sum([a_i * b_i])`.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn sum_of_products<const T: usize>(a: &[Self; T], b: &[Self; T]) -> Self {
         let mut sum = Self::zero();
         for i in 0..a.len() {
@@ -297,7 +297,7 @@ pub trait Field:
     /// p^4, ..., p^(2^n)]` when `exp` has at most `n` bits.
     ///
     /// This returns `None` when a power is missing from the table.
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn pow_with_table<S: AsRef<[u64]>>(powers_of_2: &[Self], exp: S) -> Option<Self> {
         let mut res = Self::one();
         for (pow, bit) in crate::BitIteratorLE::without_trailing_zeros(exp).enumerate() {

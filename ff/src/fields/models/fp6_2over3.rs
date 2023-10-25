@@ -19,7 +19,7 @@ pub trait Fp6Config: 'static + Send + Sync {
     /// Coefficients for the Frobenius automorphism.
     const FROBENIUS_COEFF_FP6_C1: &'static [<Self::Fp3Config as Fp3Config>::Fp];
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_fp3_by_nonresidue_in_place(fe: &mut Fp3<Self::Fp3Config>) -> &mut Fp3<Self::Fp3Config> {
         let old_c1 = fe.c1;
         fe.c1 = fe.c0;
@@ -43,7 +43,7 @@ impl<P: Fp6Config> QuadExtConfig for Fp6ConfigWrapper<P> {
 
     const FROBENIUS_COEFF_C1: &'static [Self::FrobCoeff] = P::FROBENIUS_COEFF_FP6_C1;
 
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_base_field_by_nonresidue_in_place(fe: &mut Self::BaseField) -> &mut Self::BaseField {
         P::mul_fp3_by_nonresidue_in_place(fe);
         fe

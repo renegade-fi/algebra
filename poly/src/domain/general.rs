@@ -141,37 +141,37 @@ impl<F: FftField> EvaluationDomain<F> for GeneralEvaluationDomain<F> {
         None
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn size(&self) -> usize {
         map!(self, size)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn log_size_of_group(&self) -> u64 {
         map!(self, log_size_of_group) as u64
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn size_inv(&self) -> F {
         map!(self, size_inv)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn group_gen(&self) -> F {
         map!(self, group_gen)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn group_gen_inv(&self) -> F {
         map!(self, group_gen_inv)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn coset_offset(&self) -> F {
         map!(self, coset_offset)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn coset_offset_inv(&self) -> F {
         map!(self, coset_offset_inv)
     }
@@ -180,27 +180,27 @@ impl<F: FftField> EvaluationDomain<F> for GeneralEvaluationDomain<F> {
         map!(self, coset_offset_pow_size)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn fft_in_place<T: DomainCoeff<F>>(&self, coeffs: &mut Vec<T>) {
         map!(self, fft_in_place, coeffs)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn ifft_in_place<T: DomainCoeff<F>>(&self, evals: &mut Vec<T>) {
         map!(self, ifft_in_place, evals)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn evaluate_all_lagrange_coefficients(&self, tau: F) -> Vec<F> {
         map!(self, evaluate_all_lagrange_coefficients, tau)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn vanishing_polynomial(&self) -> crate::univariate::SparsePolynomial<F> {
         map!(self, vanishing_polynomial)
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn evaluate_vanishing_polynomial(&self, tau: F) -> F {
         map!(self, evaluate_vanishing_polynomial, tau)
     }
@@ -217,7 +217,7 @@ pub struct GeneralElements<F: FftField>(Elements<F>);
 impl<F: FftField> Iterator for GeneralElements<F> {
     type Item = F;
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn next(&mut self) -> Option<F> {
         self.0.next()
     }

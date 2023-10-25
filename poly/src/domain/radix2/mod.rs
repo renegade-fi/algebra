@@ -103,47 +103,47 @@ impl<F: FftField> EvaluationDomain<F> for Radix2EvaluationDomain<F> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn size(&self) -> usize {
         usize::try_from(self.size).unwrap()
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn log_size_of_group(&self) -> u64 {
         self.log_size_of_group as u64
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn size_inv(&self) -> F {
         self.size_inv
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn group_gen(&self) -> F {
         self.group_gen
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn group_gen_inv(&self) -> F {
         self.group_gen_inv
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn coset_offset(&self) -> F {
         self.offset
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn coset_offset_inv(&self) -> F {
         self.offset_inv
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn coset_offset_pow_size(&self) -> F {
         self.offset_pow_size
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn fft_in_place<T: DomainCoeff<F>>(&self, coeffs: &mut Vec<T>) {
         if coeffs.len() * DEGREE_AWARE_FFT_THRESHOLD_FACTOR <= self.size() {
             self.degree_aware_fft_in_place(coeffs);
@@ -153,7 +153,7 @@ impl<F: FftField> EvaluationDomain<F> for Radix2EvaluationDomain<F> {
         }
     }
 
-    #[inline]
+    #[cfg_attr(not(feature = "bin-opt"), inline)]
     fn ifft_in_place<T: DomainCoeff<F>>(&self, evals: &mut Vec<T>) {
         evals.resize(self.size(), T::zero());
         self.in_order_ifft_in_place(&mut *evals);

@@ -58,7 +58,7 @@ impl TECurveConfig for EdwardsConfig {
     type MontCurveConfig = EdwardsConfig;
 
     /// Multiplication by `a` is simply negation here.
-    #[inline(always)]
+    #[cfg_attr(not(feature = "bin-opt"), inline(always))]
     fn mul_by_a(elem: Self::BaseField) -> Self::BaseField {
         -elem
     }
